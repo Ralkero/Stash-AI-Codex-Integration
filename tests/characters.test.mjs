@@ -162,13 +162,27 @@ test("contract 6 reader is gated, bounded, deduplicated and projected without un
   );
   assert.equal(TOOL_SCHEMA, 10);
 });
-test("female eligibility owner preserves existing Character read semantics", async () => {
-  const f = fixture({ rows: mixedRows, version: "0.9.25", projectOwnerVersion: true });
-  const r = await f.adapters.read("characters", {sceneIds:["1","2","3","4"]});
-  assert.equal(r.status,"available");
-  assert.deepEqual(r.scenes.map(s=>s.presence),["absent","unknown","present","absent"]);
-});
-for (const version of ["0.9.20", "0.9.26", "bad"])
+for (const version of ["0.9.25", "0.9.26"])
+  test(
+    "female eligibility owner preserves existing Character read semantics " +
+      version,
+    async () => {
+      const f = fixture({
+        rows: mixedRows,
+        version,
+        projectOwnerVersion: true,
+      });
+      const r = await f.adapters.read("characters", {
+        sceneIds: ["1", "2", "3", "4"],
+      });
+      assert.equal(r.status, "available");
+      assert.deepEqual(
+        r.scenes.map((s) => s.presence),
+        ["absent", "unknown", "present", "absent"],
+      );
+    },
+  );
+for (const version of ["0.9.20", "0.9.27", "bad"])
   test(
     "unaudited Character owner " + version + " cannot invoke new mode",
     async () => {

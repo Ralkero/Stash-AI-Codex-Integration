@@ -828,6 +828,29 @@ test("conflict reports exact scene and accurate remaining relationships", async 
   assert.equal(s.counts.pending, 1);
   assert.equal(s.verifiedRelationships, 1);
 });
+for (const version of ["0.9.25", "0.9.26"])
+  test(
+    "audited registry owner accepted without changing cleanup permissions " +
+      version,
+    async () => {
+      const adapter = new TagCleanupAdapter({
+        query: async () => ({
+          version: {
+            version: "v0.31.1-native-audio.12",
+            hash: "navigation-lifecycle-v12",
+          },
+          plugins: Object.entries(AUDITED_PLUGINS).map(([id, v]) => ({
+            id,
+            version: id === "scene-auto-tagger" ? version : v,
+            enabled: true,
+            hooks: null,
+          })),
+          configuration: { plugins: {} },
+        }),
+      });
+      assert.equal((await adapter.environment()).owner, version);
+    },
+  );
 for (const label of [
   "native",
   "owner",
@@ -853,7 +876,7 @@ for (const label of [
     await adapter.environment();
     if (label === "native") r.version.hash = "unknown";
     if (label === "owner")
-      r.plugins.find((p) => p.id === "scene-auto-tagger").version = "0.9.26";
+      r.plugins.find((p) => p.id === "scene-auto-tagger").version = "0.9.27";
     if (label === "new-plugin")
       r.plugins.push({ id: "writer", version: "1", enabled: true });
     if (label === "disabled-owner")

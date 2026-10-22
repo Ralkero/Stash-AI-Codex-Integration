@@ -1,0 +1,769 @@
+{
+  "schemaVersion": 1,
+  "revision": "2026-10-22.1",
+  "reviewedAt": "2026-10-22",
+  "method": "Manually reviewed public factual identity assertions; no copied biographies, appearance inference, private IDs, runtime lookup or automatic imports. Source links are provenance, not executable inputs.",
+  "records": [
+    {
+      "canonical": "Ahri",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/ahri/",
+        "https://en.wikipedia.org/wiki/K/DA"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Akali",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/akali/",
+        "https://wiki.leagueoflegends.com/en-us/Universe:Akali"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Irelia",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/irelia/",
+        "https://wiki.leagueoflegends.com/en-us/Universe:Irelia"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Neeko",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/neeko/",
+        "https://wiki.leagueoflegends.com/en-us/Universe:Neeko"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Qiyana",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/qiyana/",
+        "https://wiki.leagueoflegends.com/en-us/Universe:Qiyana"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Sona",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/sona/",
+        "https://wiki.leagueoflegends.com/en-us/Universe:Sona"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Seraphine",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/seraphine/",
+        "https://wiki.leagueoflegends.com/en-us/Universe:Seraphine"
+      ],
+      "basis": "Publisher identity biography and independently reviewed female character description."
+    },
+    {
+      "canonical": "Kai'Sa",
+      "aliases": [
+        "Kaisa"
+      ],
+      "category": "character",
+      "gender": "female",
+      "franchise": "League of Legends",
+      "sources": [
+        "https://www.leagueoflegends.com/en-us/champions/kaisa/",
+        "https://en.wikipedia.org/wiki/K/DA"
+      ],
+      "basis": "Publisher Daughter of the Void identity; girl-group identity corroboration."
+    },
+    {
+      "canonical": "Asuka Kazama",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Tekken",
+      "sources": [
+        "https://en.bandainamcoent.eu/tekken/tekken-8/characters/asuka-kazama",
+        "https://en.wikipedia.org/wiki/Characters_of_the_Tekken_series#Asuka_Kazama/Summer_Asuka"
+      ],
+      "basis": "Publisher identifies the Kazama martial artist and Naniwa Peacemaker. Female identity corroborated by the character reference."
+    },
+    {
+      "canonical": "Ana Amari",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/ana/",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Brigitte Lindholm",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/brigitte/",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "D.Va",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/dva/",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Junker Queen",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/junker-queen/",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Pharah",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/pharah/",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Tracer",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/tracer/",
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Sombra",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/sombra/",
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Symmetra",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Overwatch",
+      "sources": [
+        "https://overwatch.blizzard.com/en-gb/heroes/symmetra/",
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Publisher hero biography; explicit female-character categorization corroboration."
+    },
+    {
+      "canonical": "Ada Wong",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Alyx Vance",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Half-Life",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Chloe Price",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Life Is Strange",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Chun-Li",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Street Fighter",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Claire Redfield",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Cortana",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Halo",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Elena Fisher",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Uncharted",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Ivy Valentine",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Soulcalibur",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Jill Valentine",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Josie Rizal",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Tekken",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Juliet Starling",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Lollipop Chainsaw",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Kula Diamond",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "The King of Fighters",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Lara Croft",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Tomb Raider",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Leona Heidern",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "The King of Fighters",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Liara T'Soni",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Mass Effect",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Lunafreya Nox Fleuret",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Final Fantasy XV",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Luna Snow",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Marvel",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Mai Shiranui",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Fatal Fury",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Malenia",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Elden Ring",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Max Caulfield",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Life Is Strange",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Midna",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "The Legend of Zelda",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Mileena",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Mortal Kombat",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Minthara",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Baldur's Gate",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Morrigan Aensland",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Darkstalkers",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Princess Peach",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Super Mario",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Rachel Amber",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Life Is Strange",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Rebecca Chambers",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Sarah Bryant",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Virtua Fighter",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Shadowheart",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Baldur's Gate",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Sherry Birkin",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Sheva Alomar",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Tina Armstrong",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Dead or Alive",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Urbosa",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "The Legend of Zelda",
+      "sources": [
+        "https://en.wikipedia.org/w/index.php?pagefrom=Lockhart%2C+Tifa%0ATifa+Lockhart&title=Category%3AFemale_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Yuffie Kisaragi",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Final Fantasy VII",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Kitana",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Mortal Kombat",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Linkle",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "The Legend of Zelda",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "canonical": "Samus Aran",
+      "aliases": [
+        "Samus"
+      ],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Metroid",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Samus_Aran",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Reference explicitly identifies female gender and the established short name."
+    },
+    {
+      "canonical": "Sophitia Alexandra",
+      "aliases": [
+        "Sophitia"
+      ],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Soulcalibur",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Sophitia_Alexandra",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Reference identifies the character, her short name and female-character category."
+    },
+    {
+      "canonical": "Cassandra Alexandra",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Soulcalibur",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Characters_of_the_Soulcalibur_series#Cassandra"
+      ],
+      "basis": "Reference explicitly identifies Achelous and Nike's daughter, Sophitia's sister."
+    },
+    {
+      "canonical": "Julia Chang",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Tekken",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Michelle_and_Julia_Chang",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Reference explicitly identifies Michelle's adopted daughter; not a combined identity."
+    },
+    {
+      "canonical": "Emma Frost",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "Marvel",
+      "sources": [
+        "https://www.marvel.com/characters/emma-frost",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Publisher identifies Emma Grace Frost, the White Queen and headmistress."
+    },
+    {
+      "canonical": "Harley Quinn",
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "franchise": "DC",
+      "sources": [
+        "https://www.dc.com/characters/harley-quinn"
+      ],
+      "basis": "Publisher identifies Harleen Quinzel and her membership of an all-girl team."
+    },
+    {
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Alcina Dimitrescu",
+      "franchise": "Resident Evil",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Lady_Dimitrescu",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Reference identifies the full name and noblewoman, corroborated by the female-character category."
+    },
+    {
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Cammy White",
+      "franchise": "Street Fighter",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cammy",
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_video_games"
+      ],
+      "basis": "Reference establishes exact full name; female-character category corroboration."
+    },
+    {
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Juri Han",
+      "franchise": "Street Fighter",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Juri_(Street_Fighter)"
+      ],
+      "basis": "Reference explicitly describes development as a female Korean character and gives the full name."
+    },
+    {
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Hinata Hyuga",
+      "franchise": "Naruto",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_anime_and_manga"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "aliases": [],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Rei Ayanami",
+      "franchise": "Neon Genesis Evangelion",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Category:Female_characters_in_anime_and_manga"
+      ],
+      "basis": "Exact named character in the reference's explicit female-character category."
+    },
+    {
+      "aliases": [
+        "Lili"
+      ],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Emilie De Rochefort",
+      "franchise": "Tekken",
+      "sources": [
+        "https://en.bandainamcoent.eu/tekken/tekken-8/characters/lili",
+        "https://en.wikipedia.org/wiki/Lili_(Tekken)"
+      ],
+      "basis": "Publisher identifies a daughter; reference explicitly connects full name to Lili. Duplicate native aliases remain blocked."
+    },
+    {
+      "aliases": [
+        "Sue Storm"
+      ],
+      "category": "character",
+      "gender": "female",
+      "canonical": "Susan Storm",
+      "franchise": "Marvel",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Invisible_Woman",
+        "https://en.wikipedia.org/wiki/Category:Marvel_Comics_female_superheroes"
+      ],
+      "basis": "Reference identifies Susan/Sue Storm as Invisible Woman. Duplicate native aliases remain blocked."
+    }
+  ]
+}

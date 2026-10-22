@@ -8,6 +8,8 @@ approval in Stash before any write.
 
 Current tracked release: **0.11.2**.
 
+Audited owner integration: [Scene Auto-Tagger 0.9.26 verified identity registry](docs/identity-registry-0.9.26.md). This expands source-backed identity records without changing existing scene tags or approval rules.
+
 > This repository tracks a customized, installation-specific project. It is not
 > an official Stash or OpenAI product. Review the compatibility checks before
 > using it with a different Stash build or plugin ecosystem.
