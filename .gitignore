@@ -1,0 +1,27 @@
+node_modules/
+state/
+.env
+.env.*
+!.env.example
+*.log
+*.sqlite
+*.sqlite-*
+*.db
+*.zip
+
+# Local Stash AI runtime and production validation evidence
+validation/
+evidence*.json
+REPORT*.md
+VALIDATION*.md
+*.png
+!plugin/assets/*.png
+checkpoint-*/
+backup*.json
+rehearsal*.json
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
