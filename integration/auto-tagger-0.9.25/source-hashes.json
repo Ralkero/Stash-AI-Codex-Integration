@@ -1,0 +1,16 @@
+{
+  "scene-auto-tagger.js": "d24c5feabb851d68d4b27bcddae281d177fbe482b4cfcfbfc34d24e1f551722b",
+  "scene-auto-tagger.yml": "75f9b593b2e26f8058cf990d82101da05037bf703d797762b055f3a8f7c2568c",
+  "build-ai-read.cjs": "ee46b0d8586d82df46e3b2a1ef8f57b039cc7861289d80de70acddf521e999a2",
+  "ai-read-source.js": "a984b216924b3664b1752567f870b98c738374cefe3fa8a58e5840a7694d4240",
+  "character-identity-source.js": "f286d80542c6c40f6552b30a6dc82993de14a693928b913f1f2223b273914284",
+  "descriptor-transactions-source.js": "851e20645d94687a74290328dc7f505c806791239df8e6eedb67bafb193e966e",
+  "ui/scene-descriptor-review.js": "f1b581919ef40178cf11095995b5ea5a89cf49e00cc11f32933209e0565a34ee",
+  "verify_scene_auto_tagger_creation.mjs": "2bc29246fd83a089d045838e10f64104f59541aa2da15419d1a4161f3bfd154e",
+  "tests/scene-auto-tagger.test.js": "7ca39bf146eb2a6fbc83d97f3f3b08555fa36f7b5bc37cae22dbb732b163e39a",
+  "README.md": "1168c6893fd713411cd2c646a20d51d96d6795cf5464f765b768c5bb30dc3a94",
+  "CHANGELOG.md": "a81c2950b6fd1ea7a83e97b7e889c2f277681550a22f8550bf2a550e2834f374",
+  "identity-eligibility-source.js": "13a24a7eab209a4c09106448df91ab91a1690f150e1eb922966f2f73700d29d4",
+  "tests/identity-eligibility.test.js": "cfbda87c09c084c1a4936b7c0148e085091325d87f74f745c125bf44ed8b82ac",
+  "IDENTITY-POLICY.md": "36e04682d605ce6ad25b33e838e8184e55bdf8416edd9b9d163d1d20fad92f07"
+}

@@ -255,14 +255,14 @@ export class TagCleanup {
       noGlobalTagDeletion: true,
       noSceneDeletion: true,
       recurrencePrevention:
-        p.manifest.environment.owner === "0.9.24" &&
+        ["0.9.24", "0.9.25"].includes(p.manifest.environment.owner) &&
         p.manifest.tags.every(
           (t) =>
             t.eligible && RECURRENCE_PROTECTED_TAGS[t.tag.id] === t.tag.name,
         )
           ? {
               status: "verified-at-preparation",
-              ownerVersion: "0.9.24",
+              ownerVersion: p.manifest.environment.owner,
               tagIds: p.manifest.tags.map((t) => t.tag.id),
               explanation:
                 "The audited Auto-Tagger prevents new scene assignments of these exact identities. Approval rechecks the owner and environment. Other external writers are not covered.",
@@ -567,7 +567,7 @@ export class TagCleanup {
     // Presentation-only correction for an early .11.1 explanation. Never mutate
     // saved audit evidence or frozen manifests to repair display text.
     if (
-      a.environment.owner === "0.9.24" &&
+      ["0.9.24", "0.9.25"].includes(a.environment.owner) &&
       t.eligible &&
       t.category === "confirmed-non-character" &&
       RECURRENCE_PROTECTED_TAGS[t.tag.id] === t.tag.name

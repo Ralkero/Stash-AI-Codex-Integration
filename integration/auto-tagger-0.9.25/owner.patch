@@ -1,0 +1,380 @@
+diff --git a/scene-auto-tagger/scene-auto-tagger.js b/scene-auto-tagger/scene-auto-tagger.js
+--- a/scene-auto-tagger/scene-auto-tagger.js
++++ b/scene-auto-tagger/scene-auto-tagger.js
+@@ -59 +59 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.24", readOnly: true,
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.25", readOnly: true,
+@@ -296 +296 @@ function run(args, runtime) {
+-  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.24', observedAt:new Date().toISOString()};
++  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.25', observedAt:new Date().toISOString()};
+@@ -418 +418 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.24",
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.25",
+@@ -477,0 +478,100 @@ return { run: run, classify: classify, summary: summary };
++// BEGIN GENERATED IDENTITY ELIGIBILITY
++var SceneIdentityEligibility = (function(){
++// Owner-controlled policy v1. No network, model output, learned rules or taxonomy
++// parent can confer eligibility. Seed evidence: explicit user policy examples.
++// Registry changes require source review; no runtime registry mutation API exists.
++function normalizeIdentity(value) {
++  return String(value || '').normalize('NFKC').toLowerCase()
++    // Avoid Unicode property escapes: Stash's embedded engine accepts them but
++    // does not implement the same matching semantics as Node. Preserve Unicode
++    // letters conservatively; unsupported spellings therefore fail closed.
++    .replace(/[\s_\-\u2010-\u2015\u2018-\u201f]+/g, ' ').replace(/[^a-z0-9\u0080-\uffff ]/g, ' ')
++    .replace(/\s+/g, ' ').trim();
++}
++const records = [
++  ['Mercy','female'], ['Widowmaker','female'], ['Tifa Lockhart','female'],
++  ['Aerith Gainsborough','female'], ['Kiriko','female'], ['Wonder Woman','female'],
++  ['Supergirl','female'], ['Batgirl','female'], ['Chainsaw Man','male'],
++  ['Spider-Man','male'], ['Iron Man','male'], ['Batman','male'],
++  ['Superman','male'], ['Hellboy','male'], ['Reinhardt','male'], ['Baymax','genderless']
++].map(function(r) { return { canonical: r[0], aliases: [], category: 'character',
++  gender: r[1], evidence: 'reviewed-policy-examples-v1' }; }).concat(
++  ['Overwatch','Soul Calibur','Stellar Blade','Resident Evil','Street Fighter',
++   'League of Legends','Elden Ring','Dead or Alive'].map(function(name) {
++    return { canonical:name, aliases:[], category:'franchise', evidence:'reviewed-policy-examples-v1' };
++  })
++);
++function genderSignal(name) {
++  const n = normalizeIdentity(name), tokens = n.split(' ');
++  const male = tokens.some(t => ['man','boy','sir','mister'].includes(t)) ||
++    ['batman','superman','hellboy'].includes(n);
++  const female = tokens.some(t => ['woman','girl','lady'].includes(t)) ||
++    ['supergirl','batgirl'].includes(n);
++  return male && female ? 'conflict' : male ? 'male' : female ? 'female' : null;
++}
++function result(status, reason, record) {
++  const message = status === 'eligible' ? 'Verified female identity. Assignment also requires evidence in this scene.' :
++    reason === 'unresolved-scene-association' ? 'This identity was not verified in the scene title or filename.' :
++    reason === 'unresolved-conflicting-evidence' ? 'Identity information and established name signals conflict. Review is needed.' :
++    reason === 'unresolved-alias-collision' ? 'This name resolves to more than one identity or Tag. Review is needed.' :
++    reason === 'unresolved-gender' ? 'Female identity has not been verified.' :
++    status === 'ineligible' && record && record.category === 'franchise' ? 'This is a Franchise, not an individual Character.' :
++    status === 'ineligible' ? 'This identity does not meet the female-only identity policy.' :
++    'Identity eligibility could not be verified. No automatic assignment is permitted; this is not proof of incorrect metadata.';
++  return {status, reason, policyVersion:1, canonical:record ? record.canonical : null,
++    category:record ? record.category : null, gender:record ? record.gender || null : null,
++    evidence:record ? record.evidence : null, message};
++}
++function resolve(tag, registry) {
++  if (!tag || typeof tag.name !== 'string') return [];
++  return (registry || records).filter(r =>
++    [r.canonical].concat(r.aliases || []).some(n => normalizeIdentity(n) === normalizeIdentity(tag.name)) &&
++    (!r.tagId || String(r.tagId) === String(tag.id)));
++}
++function classify(tag, registry) {
++  const matches = resolve(tag, registry);
++  if (!matches.length) return result('unresolved','unresolved-identity');
++  if (matches.length !== 1) return result('unresolved','unresolved-alias-collision');
++  const r = matches[0];
++  if (r.canonical === 'Chainsaw Man' && (tag.parents || []).some(p =>
++      normalizeIdentity(p.name) === 'franchises'))
++    return result('ineligible','ineligible-franchise',{...r,category:'franchise',gender:null});
++  if (!r.evidence) return result('unresolved','unresolved-identity',r);
++  if (!['character','adult-performer'].includes(r.category))
++    return result('ineligible','ineligible-' + r.category,r);
++  if (r.category === 'adult-performer' && r.adultVerified !== true)
++    return result('unresolved','unresolved-adult-performer',r);
++  const signals = [r.canonical].concat(r.aliases || []).map(genderSignal).filter(Boolean);
++  if (signals.includes('conflict') || (signals.includes('male') && signals.includes('female')) ||
++      (r.gender === 'female' && signals.includes('male')) ||
++      (r.gender === 'male' && signals.includes('female')))
++    return result('unresolved','unresolved-conflicting-evidence',r);
++  const gender = r.gender || (signals.includes('male') ? 'male' : null);
++  if (!gender || gender === 'unknown') return result('unresolved','unresolved-gender',r);
++  if (gender !== 'female') return result('ineligible','ineligible-' + gender + '-' + r.category,r);
++  if (tag.ignore_auto_tag) return result('unresolved','unresolved-ignored',r);
++  if ((tag.parents || []).some(p => normalizeIdentity(p.name) !== 'characters'))
++    return result('unresolved','unresolved-conflicting-taxonomy',r);
++  return result('eligible','eligible-known-female-' + r.category,r);
++}
++// Folders, details, Studio and Author never establish scene presence. An exact
++// bounded identity phrase in title/basename is required in addition to eligibility.
++function associated(scene, record) {
++  if (!scene || !record) return false;
++  const texts = [scene.title || ''].concat((scene.files || []).map(f =>
++    f.basename || String(f.path || '').split(/[\\/]/).pop() || ''));
++  return [record.canonical].concat(record.aliases || []).some(alias => {
++    const n = normalizeIdentity(alias);
++    return n.length >= 3 && texts.some(t => (' ' + normalizeIdentity(t) + ' ').includes(' ' + n + ' '));
++  });
++}
++function authorize(tag, scene, registry) {
++  const decision = classify(tag, registry);
++  if (decision.status !== 'eligible') return decision;
++  return associated(scene, resolve(tag,registry)[0]) ? decision :
++    result('unresolved','unresolved-scene-association',resolve(tag,registry)[0]);
++}
++return { records, normalizeIdentity, genderSignal, resolve, classify, associated, authorize };
++
++})();
++// END GENERATED IDENTITY ELIGIBILITY
+@@ -493 +593 @@ return { run: run, classify: classify, summary: summary };
+-const PLUGIN_VERSION = "0.9.24";
++const PLUGIN_VERSION = "0.9.25";
+@@ -1827,0 +1928 @@ function buildUpdateInput(sceneId, finalAssignments, current) {
++  Object.defineProperty(input, '__identityExpected', {value:current, enumerable:false});
+@@ -1905,0 +2007,7 @@ function doGraphQL(query, variables, runtime, operationName) {
++  // All embedded native scene Tag writes pass through this boundary, including
++  // manual learned repairs. Descriptor-only and image writes are unaffected.
++  if (/\bsceneUpdate\s*\(/.test(query) && variables && variables.input &&
++      Object.prototype.hasOwnProperty.call(variables.input, 'tag_ids')) {
++    variables = { ...variables, input: guardSceneIdentityWrite(variables.input, runtime) };
++    if (Object.keys(variables.input).length === 1) return { sceneUpdate: { id: variables.input.id } };
++  }
+@@ -1921,0 +2030,62 @@ function doGraphQL(query, variables, runtime, operationName) {
++function guardSceneIdentityWrite(input, runtime, preview) {
++  if (!Array.isArray(input.tag_ids) || input.tag_ids.length > 1000) throw Error('IDENTITY_POLICY_INVALID_TAGS');
++  const data = doGraphQL(GET_SCENE, {id:input.id}, runtime, 'IdentityPolicySceneRead');
++  const scene = data && data.findScene;
++  if (!scene || !Array.isArray(scene.tags) || String(scene.id) !== String(input.id))
++    throw Error('IDENTITY_POLICY_SCENE_UNAVAILABLE');
++  const existing = scene.tags.map(t => String(t.id));
++  const expected = input.__identityExpected;
++  if (expected && (!setsEqual(new Set(existing),expected.currentTagIds) ||
++      (scene.studio && String(scene.studio.id) || null) !== (expected.currentStudioId || null) ||
++      !setsEqual(new Set((scene.groups || []).map(g=>String(g.group.id))),expected.currentGroupIds)))
++    throw Error('IDENTITY_POLICY_SCENE_CHANGED_REFRESH_REQUIRED');
++  if (!preview && existing.some(id => !input.tag_ids.map(String).includes(id)))
++    throw Error('IDENTITY_POLICY_REMOVAL_NOT_PERMITTED');
++  const additions = uniq(input.tag_ids.map(String)).filter(id => !existing.includes(id));
++  const accepted = [];
++  if (additions.length) {
++    const inventory = doGraphQL('query IdentityPolicyTags {findTags(filter:{per_page:10000,page:1}){count tags{id name ignore_auto_tag parents{id name}}}}',{},runtime,'IdentityPolicyTags');
++    const found = inventory && inventory.findTags;
++    if (!found || !Array.isArray(found.tags) || found.count !== found.tags.length || found.count > 10000)
++      throw Error('IDENTITY_POLICY_INCOMPLETE_TAG_INVENTORY');
++    for (const id of additions) {
++      const tag = found.tags.find(t => String(t.id) === id);
++      let decision = SceneIdentityEligibility.authorize(tag,scene);
++      const records = SceneIdentityEligibility.resolve(tag);
++      if (records.length === 1 && found.tags.filter(t => SceneIdentityEligibility.resolve(t).includes(records[0])).length !== 1)
++        decision = {status:'unresolved', reason:'unresolved-alias-collision'};
++      if (Object.prototype.hasOwnProperty.call(SCENE_NON_CHARACTER_TAGS,id))
++        decision = {status:'ineligible',reason:'ineligible-franchise'};
++      if (decision.status === 'eligible') accepted.push(id);
++      else {
++        pluginLog('IDENTITY_POLICY_NOT_ASSIGNED tag=' + id + ' reason=' + decision.reason,runtime);
++        if (!preview) throw Error('IDENTITY_POLICY_NOT_ASSIGNED_' + id + '_' + decision.reason);
++      }
++    }
++  }
++  // Preserve every current relationship, including obsolete workflow markers.
++  const next = {...input};
++  if (!accepted.length) delete next.tag_ids;
++  else next.tag_ids = uniq(existing.concat(accepted));
++  return next;
++}
++
++function readIdentityEligibility(args, runtime) {
++  if (Object.keys(args).some(k => !['mode','kind','tagIds'].includes(k))) throw Error('IDENTITY_POLICY_INVALID_ARGUMENT');
++  const result = {apiVersion:1,policyVersion:1,owner:'scene-auto-tagger',ownerVersion:'0.9.25',readOnly:true};
++  if (args.kind === 'capabilities' && args.tagIds === undefined) return {...result,maxTagIds:50};
++  if (args.kind !== 'tags' || !Array.isArray(args.tagIds) || !args.tagIds.length || args.tagIds.length > 50 ||
++      args.tagIds.some(id => typeof id !== 'string' || !/^[1-9][0-9]{0,15}$/.test(id)) || new Set(args.tagIds).size !== args.tagIds.length)
++    throw Error('IDENTITY_POLICY_INVALID_IDS');
++  const data = doGraphQL('query IdentityEligibility {findTags(filter:{per_page:10000,page:1}){count tags{id name ignore_auto_tag parents{id name}}}}',{},runtime,'IdentityEligibilityRead');
++  if (!data || !data.findTags || !Array.isArray(data.findTags.tags) || data.findTags.count !== data.findTags.tags.length || data.findTags.count > 10000) throw Error('IDENTITY_POLICY_UNAVAILABLE');
++  return {...result, tags:args.tagIds.map(id => {
++    const tag=data.findTags.tags.find(t => String(t.id)===id);
++    let decision = SceneIdentityEligibility.classify(tag);
++    const resolved = SceneIdentityEligibility.resolve(tag);
++    if (resolved.length === 1 && data.findTags.tags.filter(t=>SceneIdentityEligibility.resolve(t).includes(resolved[0])).length !== 1)
++      decision = {status:'unresolved',reason:'unresolved-alias-collision',message:'Several Tags resolve to this identity. Review the duplicate definitions before automatic assignment.'};
++    return {id,...decision,association:'not-evaluated'};
++  })};
++}
++
+@@ -2896,0 +3067,2 @@ function processScene(sceneId, mode, configInput, aliasMapInput, runtime, runId,
++    const checkedTags = guardSceneIdentityWrite({id:sceneId,tag_ids:matched.tagIds},runtime,true);
++    matched.tagIds = (checkedTags.tag_ids || []).filter(id => !current.currentTagIds.has(id));
+@@ -2953,41 +3125,2 @@ function handleReviewScene(sceneId, config, current, runtime, csvRow) {
+-
+-  if (config.dryRun) {
+-    csvRow.result = "dry_run_review";
+-    emitCSV(csvRow);
+-    pluginLog("REVIEW dry-run scene=" + sceneId, runtime);
+-    return csvRow;
+-  }
+-
+-  if (!config.addNeedsReviewTag) {
+-    csvRow.result = "skipped_needs_review";
+-    emitCSV(csvRow);
+-    pluginLog("REVIEW skipped scene=" + sceneId, runtime);
+-    return csvRow;
+-  }
+-
+-  const reviewTag = findOrCreateTagByName(NEEDS_REVIEW_TAG, config.createMissingTags, runtime);
+-  if (!reviewTag || !reviewTag.id) {
+-    csvRow.result = "skipped_needs_review_missing_tag";
+-    emitCSV(csvRow);
+-    pluginLog("REVIEW missing tag scene=" + sceneId, runtime);
+-    return csvRow;
+-  }
+-
+-  const finalAssignments = {
+-    studioId: current.currentStudioId || null,
+-    groupIds: Array.from(current.currentGroupIds),
+-    tagIds: Array.from(setUnion(current.currentTagIds, [reviewTag.id]))
+-  };
+-
+-  if (compareBeforeWrite(finalAssignments, current)) {
+-    csvRow.action_taken = "no-op";
+-    csvRow.result = "already_compliant";
+-    csvRow.matched_tag_ids = finalAssignments.tagIds.join("|");
+-    emitCSV(csvRow);
+-    pluginLog("NO-OP review scene=" + sceneId, runtime);
+-    return csvRow;
+-  }
+-
+-  doGraphQL(UPDATE_SCENE, { input: buildUpdateInput(sceneId, finalAssignments, current) }, runtime, "UpdateScene");
+-  csvRow.matched_tag_ids = finalAssignments.tagIds.join("|");
+-  csvRow.result = "needs_review_tagged";
++  // Native Tags are identities only; review state is reported without a marker.
++  csvRow.result = config.dryRun ? 'dry_run_review' : 'skipped_needs_review';
+@@ -2995 +3127,0 @@ function handleReviewScene(sceneId, config, current, runtime, csvRow) {
+-  pluginLog("REVIEW tagged scene=" + sceneId, runtime);
+@@ -2996,0 +3129 @@ function handleReviewScene(sceneId, config, current, runtime, csvRow) {
++
+@@ -3007,7 +3139,0 @@ function buildFinalAssignments(current, matched, config) {
+-  const hasResolvedApplyMetadata = !!matched.studioId || !!(matched.groupIds && matched.groupIds.length) || !!(matched.tagIds && matched.tagIds.length);
+-  if (config.removeNeedsReviewOnApply && hasResolvedApplyMetadata && current.currentNeedsReviewTagIds && current.currentNeedsReviewTagIds.length) {
+-    const reviewIds = new Set(current.currentNeedsReviewTagIds.map(String));
+-    const beforeCount = tagIds.length;
+-    tagIds = tagIds.filter(id => !reviewIds.has(String(id)));
+-    if (tagIds.length !== beforeCount) removedNeedsReviewTagIds = current.currentNeedsReviewTagIds.slice().sort();
+-  }
+@@ -3263,0 +3390 @@ function mayCreateMissingObject(objectType, candidate) {
++  if (objectType === "tag") return false; // Identity policy never creates global Tags.
+@@ -3312 +3438,0 @@ function resolveApplyMatches(candidates, config, runtime, dryRun) {
+-    let parentId = null;
+@@ -3322,10 +3448,2 @@ function resolveApplyMatches(candidates, config, runtime, dryRun) {
+-      if (!parentId) {
+-        const parent = findTagByName(config.characterParentTag, runtime);
+-        if (parent && parent.id) parentId = String(parent.id);
+-        else if (!dryRun && config.createMissingTags) {
+-          const createdParent = createTag(config.characterParentTag, [], runtime);
+-          if (createdParent && createdParent.id) parentId = String(createdParent.id);
+-        } else if (config.createMissingTags) {
+-          result.wouldCreate.push("tag:" + config.characterParentTag);
+-        }
+-      }
++      // Unknown identity definitions require explicit review outside automatic tagging.
++      continue;
+@@ -3333,18 +3450,0 @@ function resolveApplyMatches(candidates, config, runtime, dryRun) {
+-      if (parentId) {
+-        const t = findExistingTagForCandidate(cCandidate, runtime, config, parentId);
+-        if (t && t.id) {
+-          result.tagIds.push(String(t.id));
+-          addAutoAliasPlan(result, "tag", t, cCandidate, config);
+-        }
+-        else if (!dryRun && config.createMissingTags && mayCreateMissingObject("tag", cCandidate)) {
+-          const created = createTag(cCandidate.name, [parentId], runtime);
+-          if (created && created.id) {
+-            result.tagIds.push(String(created.id));
+-            addAutoAliasPlan(result, "tag", created, cCandidate, config);
+-          }
+-        } else if (config.createMissingTags && mayCreateMissingObject("tag", cCandidate)) {
+-          result.wouldCreate.push("tag:" + cCandidate.name);
+-        }
+-      } else if (dryRun && config.createMissingTags && mayCreateMissingObject("tag", cCandidate)) {
+-        result.wouldCreate.push("tag:" + cCandidate.name);
+-      }
+@@ -5191,0 +5292 @@ function main() {
++  if (mode === "identity eligibility v1") return { Output: readIdentityEligibility(operationArgsFromInput(embeddedInput), getEmbeddedRuntime()) };
+@@ -5207,0 +5309,3 @@ if (typeof module !== "undefined" && module.exports) {
++    identityEligibility: SceneIdentityEligibility,
++    readIdentityEligibility,
++    guardSceneIdentityWrite,
+diff --git a/scene-auto-tagger/scene-auto-tagger.yml b/scene-auto-tagger/scene-auto-tagger.yml
+--- a/scene-auto-tagger/scene-auto-tagger.yml
++++ b/scene-auto-tagger/scene-auto-tagger.yml
+@@ -3 +3 @@ description: Safety-first embedded JS auto-tagger with explicit, reversible huma
+-version: 0.9.24
++version: 0.9.25
+diff --git a/scene-auto-tagger/build-ai-read.cjs b/scene-auto-tagger/build-ai-read.cjs
+--- a/scene-auto-tagger/build-ai-read.cjs
++++ b/scene-auto-tagger/build-ai-read.cjs
+@@ -35 +35,4 @@ const original = fs.readFileSync(file, 'utf8').replace(/\/\/ BEGIN GENERATED AI
+-const output = block + transaction + character + original;
++const eligibility = '// BEGIN GENERATED IDENTITY ELIGIBILITY\nvar SceneIdentityEligibility = (function(){\n' +
++  fs.readFileSync(path.join(__dirname, 'identity-eligibility-source.js'), 'utf8') +
++  '\n})();\n// END GENERATED IDENTITY ELIGIBILITY\n';
++const output = block + transaction + character + eligibility + original.replace(/\/\/ BEGIN GENERATED IDENTITY ELIGIBILITY[\s\S]*?\/\/ END GENERATED IDENTITY ELIGIBILITY\r?\n/, '');
+diff --git a/scene-auto-tagger/ai-read-source.js b/scene-auto-tagger/ai-read-source.js
+--- a/scene-auto-tagger/ai-read-source.js
++++ b/scene-auto-tagger/ai-read-source.js
+@@ -23 +23 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.24", readOnly: true,
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.25", readOnly: true,
+diff --git a/scene-auto-tagger/character-identity-source.js b/scene-auto-tagger/character-identity-source.js
+--- a/scene-auto-tagger/character-identity-source.js
++++ b/scene-auto-tagger/character-identity-source.js
+@@ -94 +94 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.24",
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.25",
+diff --git a/scene-auto-tagger/descriptor-transactions-source.js b/scene-auto-tagger/descriptor-transactions-source.js
+--- a/scene-auto-tagger/descriptor-transactions-source.js
++++ b/scene-auto-tagger/descriptor-transactions-source.js
+@@ -110 +110 @@ function run(args, runtime) {
+-  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.24', observedAt:new Date().toISOString()};
++  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.25', observedAt:new Date().toISOString()};
+diff --git a/scene-auto-tagger/ui/scene-descriptor-review.js b/scene-auto-tagger/ui/scene-descriptor-review.js
+--- a/scene-auto-tagger/ui/scene-descriptor-review.js
++++ b/scene-auto-tagger/ui/scene-descriptor-review.js
+@@ -5 +5 @@
+-  var UI_VERSION = "0.9.24";
++  var UI_VERSION = "0.9.25";
+diff --git a/scene-auto-tagger/verify_scene_auto_tagger_creation.mjs b/scene-auto-tagger/verify_scene_auto_tagger_creation.mjs
+--- a/scene-auto-tagger/verify_scene_auto_tagger_creation.mjs
++++ b/scene-auto-tagger/verify_scene_auto_tagger_creation.mjs
+@@ -67 +67 @@ assert.ok(calls.length > dryCallsBefore);
+-assert.deepStrictEqual(Array.from(dryResult.wouldCreate), ["tag:Tinkerbell"]);
++assert.deepStrictEqual(Array.from(dryResult.wouldCreate), []);
+@@ -72,4 +72,2 @@ const createCalls = calls.filter(call => call.query.includes("tagCreate"));
+-assert.strictEqual(createCalls.length, 1);
+-assert.strictEqual(createCalls[0].variables.input.name, "Tinkerbell");
+-assert.deepStrictEqual(Array.from(createCalls[0].variables.input.parent_ids), ["character-parent"]);
+-assert.deepStrictEqual(Array.from(applyResult.tagIds), ["new-character-1"]);
++assert.strictEqual(createCalls.length, 0);
++assert.deepStrictEqual(Array.from(applyResult.tagIds), []);
+diff --git a/scene-auto-tagger/tests/scene-auto-tagger.test.js b/scene-auto-tagger/tests/scene-auto-tagger.test.js
+--- a/scene-auto-tagger/tests/scene-auto-tagger.test.js
++++ b/scene-auto-tagger/tests/scene-auto-tagger.test.js
+@@ -197,4 +197,2 @@ test("review: Needs Review tag update is additive and preserves current tags", a
+-  assert.strictEqual(row.result, "needs_review_tagged");
+-  assert.deepStrictEqual(update.variables.input.tag_ids.sort(), ["t-existing", "t-review"]);
+-  assert.ok(!Object.prototype.hasOwnProperty.call(update.variables.input, "groups"));
+-  assert.ok(!Object.prototype.hasOwnProperty.call(update.variables.input, "studio_id"));
++  assert.strictEqual(row.result, "skipped_needs_review");
++  assert.equal(update, undefined);
+@@ -239 +237 @@ test("apply: existing groups and tags are preserved during updates", async () =>
+-  assert.deepStrictEqual(update.variables.input.tag_ids.sort(), ["t-ashley", "t-existing", "t-leon"]);
++  assert.equal(update.variables.input.tag_ids, undefined);
+diff --git a/scene-auto-tagger/README.md b/scene-auto-tagger/README.md
+--- a/scene-auto-tagger/README.md
++++ b/scene-auto-tagger/README.md
+@@ -2,0 +3,6 @@
++Scene assignment policy in 0.9.25: see [Identity policy](IDENTITY-POLICY.md).
++Only reviewed female identities with scene-specific title/filename evidence may
++be added automatically. Existing Tags are retained; unverified identities remain
++unresolved until reviewed. Older creation/marker settings documented below no
++longer authorize native scene Tag creation or marker assignment/removal.
++
+diff --git a/scene-auto-tagger/CHANGELOG.md b/scene-auto-tagger/CHANGELOG.md
+--- a/scene-auto-tagger/CHANGELOG.md
++++ b/scene-auto-tagger/CHANGELOG.md
+@@ -2,0 +3,11 @@
++## 0.9.25 - 2026-10-22
++
++- Enforce reviewed female identity eligibility and title/basename association at
++  the shared scene Tag write boundary, including learned repairs.
++- Preserve all existing Tags; reject removals, unknown identities, conflicting
++  aliases and unsupported gender evidence. Stop automatic Character Tag creation
++  and native Needs Review marker assignment/removal.
++- Add read-only `identity_eligibility_v1`; preserve Character taxonomy and
++  descriptor API meanings. See `IDENTITY-POLICY.md` for registry coverage and limits.
++- Use embedded-engine-compatible normalization, verified against installed Stash.
++

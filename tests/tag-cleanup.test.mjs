@@ -853,7 +853,7 @@ for (const label of [
     await adapter.environment();
     if (label === "native") r.version.hash = "unknown";
     if (label === "owner")
-      r.plugins.find((p) => p.id === "scene-auto-tagger").version = "0.9.25";
+      r.plugins.find((p) => p.id === "scene-auto-tagger").version = "0.9.26";
     if (label === "new-plugin")
       r.plugins.push({ id: "writer", version: "1", enabled: true });
     if (label === "disabled-owner")

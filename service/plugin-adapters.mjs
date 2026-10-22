@@ -11,14 +11,14 @@ const OWNERS = {
   descriptors: {
     pluginId: "scene-auto-tagger",
     version: "0.9.20",
-    compatibleVersions: ["0.9.20", "0.9.21", "0.9.22", "0.9.23", "0.9.24"],
+    compatibleVersions: ["0.9.20", "0.9.21", "0.9.22", "0.9.23", "0.9.24", "0.9.25"],
     mode: "ai_read_v1",
     tool: "read_descriptor_review",
   },
   characters: {
     pluginId: "scene-auto-tagger",
     version: "0.9.21",
-    compatibleVersions: ["0.9.21", "0.9.22", "0.9.23", "0.9.24"],
+    compatibleVersions: ["0.9.21", "0.9.22", "0.9.23", "0.9.24", "0.9.25"],
     mode: "character_identity_v1",
     tool: "get_scene_characters",
   },
