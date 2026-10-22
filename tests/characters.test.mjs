@@ -162,7 +162,7 @@ test("contract 6 reader is gated, bounded, deduplicated and projected without un
   );
   assert.equal(TOOL_SCHEMA, 10);
 });
-for (const version of ["0.9.25", "0.9.26"])
+for (const version of ["0.9.25", "0.9.26", "0.9.27"])
   test(
     "female eligibility owner preserves existing Character read semantics " +
       version,
@@ -182,7 +182,7 @@ for (const version of ["0.9.25", "0.9.26"])
       );
     },
   );
-for (const version of ["0.9.20", "0.9.27", "bad"])
+for (const version of ["0.9.20", "0.9.28", "bad"])
   test(
     "unaudited Character owner " + version + " cannot invoke new mode",
     async () => {

@@ -55,8 +55,9 @@ export class TagCleanupAdapter {
       "CLEANUP_NATIVE_UNTESTED",
     );
     check(
-      ["0.9.24", "0.9.25", "0.9.26"].includes(versions["scene-auto-tagger"]) &&
-        versions["scene-metadata-variants-v1"] === "0.5.27",
+      ["0.9.24", "0.9.25", "0.9.26", "0.9.27"].includes(
+        versions["scene-auto-tagger"],
+      ) && versions["scene-metadata-variants-v1"] === "0.5.27",
       "CLEANUP_OWNER_UNTESTED",
     );
     check(
@@ -67,7 +68,7 @@ export class TagCleanupAdapter {
             (Object.hasOwn(AUDITED_PLUGINS, p.id) &&
               (AUDITED_PLUGINS[p.id] === p.version ||
                 (p.id === "scene-auto-tagger" &&
-                  ["0.9.25", "0.9.26"].includes(p.version))) &&
+                  ["0.9.25", "0.9.26", "0.9.27"].includes(p.version))) &&
               !(p.hooks || []).length)),
       ) && r.plugins.some((p) => p.id === "scene-auto-tagger" && p.enabled),
       "CLEANUP_PLUGIN_DEPENDENCY_UNTESTED",
@@ -172,7 +173,7 @@ export class TagCleanupAdapter {
       owner.owner === "scene-auto-tagger" &&
         owner.apiVersion === 1 &&
         owner.authority === "explicit-character-rules-v1" &&
-        ["0.9.24", "0.9.25", "0.9.26"].includes(owner.ownerVersion) &&
+        ["0.9.24", "0.9.25", "0.9.26", "0.9.27"].includes(owner.ownerVersion) &&
         owner.readOnly === true &&
         owner.tagDetailSchema === 1 &&
         owner.sceneTagPolicy?.schema === 1 &&

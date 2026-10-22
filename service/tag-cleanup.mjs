@@ -255,7 +255,9 @@ export class TagCleanup {
       noGlobalTagDeletion: true,
       noSceneDeletion: true,
       recurrencePrevention:
-        ["0.9.24", "0.9.25", "0.9.26"].includes(p.manifest.environment.owner) &&
+        ["0.9.24", "0.9.25", "0.9.26", "0.9.27"].includes(
+          p.manifest.environment.owner,
+        ) &&
         p.manifest.tags.every(
           (t) =>
             t.eligible && RECURRENCE_PROTECTED_TAGS[t.tag.id] === t.tag.name,
@@ -567,7 +569,7 @@ export class TagCleanup {
     // Presentation-only correction for an early .11.1 explanation. Never mutate
     // saved audit evidence or frozen manifests to repair display text.
     if (
-      ["0.9.24", "0.9.25", "0.9.26"].includes(a.environment.owner) &&
+      ["0.9.24", "0.9.25", "0.9.26", "0.9.27"].includes(a.environment.owner) &&
       t.eligible &&
       t.category === "confirmed-non-character" &&
       RECURRENCE_PROTECTED_TAGS[t.tag.id] === t.tag.name

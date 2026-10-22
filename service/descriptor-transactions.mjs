@@ -9,6 +9,7 @@ const OWNER_VERSIONS = [
   "0.9.24",
   "0.9.25",
   "0.9.26",
+  "0.9.27",
 ];
 export const ASSIGNMENT_FIELDS = [
   "r34_sex_acts_positions",

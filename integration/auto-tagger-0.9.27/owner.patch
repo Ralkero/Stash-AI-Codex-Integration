@@ -1,0 +1,216 @@
+diff --git a/scene-auto-tagger/.gitignore b/scene-auto-tagger/.gitignore
+--- a/scene-auto-tagger/.gitignore
++++ b/scene-auto-tagger/.gitignore
+@@ -26,0 +27,4 @@ plugin-backups/
++
++# Private, user-reviewed native ID bindings. Never publish this file or a bundle
++# generated with its contents embedded; public packages rebuild without it.
++identity-local-review.json
+diff --git a/scene-auto-tagger/scene-auto-tagger.js b/scene-auto-tagger/scene-auto-tagger.js
+--- a/scene-auto-tagger/scene-auto-tagger.js
++++ b/scene-auto-tagger/scene-auto-tagger.js
+@@ -59 +59 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.26", readOnly: true,
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27", readOnly: true,
+@@ -296 +296 @@ function run(args, runtime) {
+-  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.26', observedAt:new Date().toISOString()};
++  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.27', observedAt:new Date().toISOString()};
+@@ -418 +418 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.26",
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27",
+@@ -479,0 +480 @@ var SceneIdentityEligibility = (function(){
++const localReview = {"schemaVersion":1,"revision":null,"records":[]};
+@@ -531 +532,3 @@ function result(status, reason, record) {
+-    registryRevision:record ? record.registryRevision || null : null, message};
++    registryRevision:record ? record.registryRevision || null : null, message,
++    associationRequirement: record ? record.associationMode || 'exact-phrase' : null,
++    decisionSource: record ? record.decisionSource || null : null};
+@@ -534,0 +538,5 @@ function resolve(tag, registry) {
++  if (!registry && typeof localReview !== 'undefined') {
++    const bound = localReview.records.filter(r => r.tagId === String(tag.id));
++    // A reviewed native binding never falls through to broad name inference.
++    if (bound.length) return bound.filter(r => r.nativeName === tag.name);
++  }
+@@ -543,0 +552 @@ function classify(tag, registry) {
++  if (r.eligibilityHold) return result('unresolved', r.eligibilityHold, r);
+@@ -548 +557,2 @@ function classify(tag, registry) {
+-  if (!['character','adult-performer'].includes(r.category))
++  const approvedSpecial = ['fictional-mascot','fictional-avatar','collective','shared-mantle','female-form'].includes(r.category) && r.policyApproval === true;
++  if (!['character','adult-performer'].includes(r.category) && !approvedSpecial)
+@@ -568,0 +579,3 @@ function associated(scene, record) {
++  // Eligibility is not permission to infer a mascot, collective, form, persona,
++  // mixed native binding or uncertain appearance from a generic title token.
++  if (record.associationMode === 'review-required') return false;
+@@ -571 +584,2 @@ function associated(scene, record) {
+-  return [record.canonical].concat(record.aliases || []).some(alias => {
++  const terms = Array.isArray(record.matchNames) ? record.matchNames : [record.canonical].concat(record.aliases || []);
++  return terms.some(alias => {
+@@ -573 +587,2 @@ function associated(scene, record) {
+-    return n.length >= 3 && texts.some(t => (' ' + normalizeIdentity(t) + ' ').includes(' ' + n + ' '));
++    const minimum = record.allowShortIdentifier === true ? 2 : 3;
++    return n.length >= minimum && texts.some(t => (' ' + normalizeIdentity(t) + ' ').includes(' ' + n + ' '));
+@@ -575,0 +591,3 @@ function associated(scene, record) {
++function sameIdentity(a,b) {
++  return !!a && !!b && normalizeIdentity(a.identityKey || a.canonical) === normalizeIdentity(b.identityKey || b.canonical);
++}
+@@ -582 +600,3 @@ function authorize(tag, scene, registry) {
+-return { records, registryRevision:verifiedRegistry.revision, normalizeIdentity, genderSignal, resolve, classify, associated, authorize };
++return { records, localRecords:typeof localReview === 'undefined' ? [] : localReview.records,
++  localRevision:typeof localReview === 'undefined' ? null : localReview.revision,
++  registryRevision:verifiedRegistry.revision, normalizeIdentity, genderSignal, resolve, classify, associated, authorize, sameIdentity };
+@@ -601 +621 @@ return { records, registryRevision:verifiedRegistry.revision, normalizeIdentity,
+-const PLUGIN_VERSION = "0.9.26";
++const PLUGIN_VERSION = "0.9.27";
+@@ -2063 +2083 @@ function guardSceneIdentityWrite(input, runtime, preview) {
+-      if (records.length === 1 && found.tags.filter(t => SceneIdentityEligibility.resolve(t).includes(records[0])).length !== 1)
++      if ((decision.status === 'eligible' || decision.reason === 'unresolved-scene-association') && records.length === 1 && found.tags.filter(t => SceneIdentityEligibility.resolve(t).some(r => SceneIdentityEligibility.sameIdentity(r,records[0]))).length !== 1)
+@@ -2083 +2103 @@ function readIdentityEligibility(args, runtime) {
+-  const result = {apiVersion:1,policyVersion:1,owner:'scene-auto-tagger',ownerVersion:'0.9.26',readOnly:true};
++  const result = {apiVersion:1,policyVersion:1,owner:'scene-auto-tagger',ownerVersion:'0.9.27',readOnly:true};
+@@ -2094,2 +2114,2 @@ function readIdentityEligibility(args, runtime) {
+-    if (resolved.length === 1 && data.findTags.tags.filter(t=>SceneIdentityEligibility.resolve(t).includes(resolved[0])).length !== 1)
+-      decision = {status:'unresolved',reason:'unresolved-alias-collision',message:'Several Tags resolve to this identity. Review the duplicate definitions before automatic assignment.'};
++    if (decision.status === 'eligible' && resolved.length === 1 && data.findTags.tags.filter(t=>SceneIdentityEligibility.resolve(t).some(r => SceneIdentityEligibility.sameIdentity(r,resolved[0]))).length !== 1)
++      decision = {...decision,identityStatus:'eligible',status:'unresolved',reason:'unresolved-alias-collision',message:'The identity is recognized, but several native Tags represent it. Review the duplicate definitions before automatic assignment.'};
+diff --git a/scene-auto-tagger/scene-auto-tagger.yml b/scene-auto-tagger/scene-auto-tagger.yml
+--- a/scene-auto-tagger/scene-auto-tagger.yml
++++ b/scene-auto-tagger/scene-auto-tagger.yml
+@@ -3 +3 @@ description: Safety-first embedded JS auto-tagger with explicit, reversible huma
+-version: 0.9.26
++version: 0.9.27
+diff --git a/scene-auto-tagger/build-ai-read.cjs b/scene-auto-tagger/build-ai-read.cjs
+--- a/scene-auto-tagger/build-ai-read.cjs
++++ b/scene-auto-tagger/build-ai-read.cjs
+@@ -34,0 +35,13 @@ const original = fs.readFileSync(file, 'utf8').replace(/\/\/ BEGIN GENERATED AI
++const localPath = path.join(__dirname, 'identity-local-review.json');
++const localReview = fs.existsSync(localPath) ? JSON.parse(fs.readFileSync(localPath,'utf8')) : {schemaVersion:1,revision:null,records:[]};
++if (localReview.schemaVersion !== 1 || !Array.isArray(localReview.records) || localReview.records.length > 10000)
++  throw Error('Invalid local identity review');
++const localIds = new Set();
++for (const r of localReview.records) {
++  if (!/^[1-9][0-9]{0,15}$/.test(r.tagId) || localIds.has(r.tagId) || typeof r.nativeName !== 'string' || !r.nativeName ||
++      typeof r.canonical !== 'string' || !r.canonical || !r.evidence || typeof r.category !== 'string' ||
++      !['exact-phrase','review-required'].includes(r.associationMode) ||
++      !Array.isArray(r.matchNames) || r.matchNames.some(n=>typeof n!=='string'||!n.trim()) ||
++      !Array.isArray(r.sources) || r.sources.some(u=>!/^https:\/\//.test(u))) throw Error('Invalid local identity binding');
++  localIds.add(r.tagId);
++}
+@@ -35,0 +49 @@ const eligibility = '// BEGIN GENERATED IDENTITY ELIGIBILITY\nvar SceneIdentityE
++  'const localReview = ' + JSON.stringify(localReview) + ';\n' +
+diff --git a/scene-auto-tagger/identity-eligibility-source.js b/scene-auto-tagger/identity-eligibility-source.js
+--- a/scene-auto-tagger/identity-eligibility-source.js
++++ b/scene-auto-tagger/identity-eligibility-source.js
+@@ -51 +51,3 @@ function result(status, reason, record) {
+-    registryRevision:record ? record.registryRevision || null : null, message};
++    registryRevision:record ? record.registryRevision || null : null, message,
++    associationRequirement: record ? record.associationMode || 'exact-phrase' : null,
++    decisionSource: record ? record.decisionSource || null : null};
+@@ -54,0 +57,5 @@ function resolve(tag, registry) {
++  if (!registry && typeof localReview !== 'undefined') {
++    const bound = localReview.records.filter(r => r.tagId === String(tag.id));
++    // A reviewed native binding never falls through to broad name inference.
++    if (bound.length) return bound.filter(r => r.nativeName === tag.name);
++  }
+@@ -63,0 +71 @@ function classify(tag, registry) {
++  if (r.eligibilityHold) return result('unresolved', r.eligibilityHold, r);
+@@ -68 +76,2 @@ function classify(tag, registry) {
+-  if (!['character','adult-performer'].includes(r.category))
++  const approvedSpecial = ['fictional-mascot','fictional-avatar','collective','shared-mantle','female-form'].includes(r.category) && r.policyApproval === true;
++  if (!['character','adult-performer'].includes(r.category) && !approvedSpecial)
+@@ -88,0 +98,3 @@ function associated(scene, record) {
++  // Eligibility is not permission to infer a mascot, collective, form, persona,
++  // mixed native binding or uncertain appearance from a generic title token.
++  if (record.associationMode === 'review-required') return false;
+@@ -91 +103,2 @@ function associated(scene, record) {
+-  return [record.canonical].concat(record.aliases || []).some(alias => {
++  const terms = Array.isArray(record.matchNames) ? record.matchNames : [record.canonical].concat(record.aliases || []);
++  return terms.some(alias => {
+@@ -93 +106,2 @@ function associated(scene, record) {
+-    return n.length >= 3 && texts.some(t => (' ' + normalizeIdentity(t) + ' ').includes(' ' + n + ' '));
++    const minimum = record.allowShortIdentifier === true ? 2 : 3;
++    return n.length >= minimum && texts.some(t => (' ' + normalizeIdentity(t) + ' ').includes(' ' + n + ' '));
+@@ -95,0 +110,3 @@ function associated(scene, record) {
++function sameIdentity(a,b) {
++  return !!a && !!b && normalizeIdentity(a.identityKey || a.canonical) === normalizeIdentity(b.identityKey || b.canonical);
++}
+@@ -102 +119,3 @@ function authorize(tag, scene, registry) {
+-return { records, registryRevision:verifiedRegistry.revision, normalizeIdentity, genderSignal, resolve, classify, associated, authorize };
++return { records, localRecords:typeof localReview === 'undefined' ? [] : localReview.records,
++  localRevision:typeof localReview === 'undefined' ? null : localReview.revision,
++  registryRevision:verifiedRegistry.revision, normalizeIdentity, genderSignal, resolve, classify, associated, authorize, sameIdentity };
+diff --git a/scene-auto-tagger/ai-read-source.js b/scene-auto-tagger/ai-read-source.js
+--- a/scene-auto-tagger/ai-read-source.js
++++ b/scene-auto-tagger/ai-read-source.js
+@@ -23 +23 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.26", readOnly: true,
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27", readOnly: true,
+diff --git a/scene-auto-tagger/character-identity-source.js b/scene-auto-tagger/character-identity-source.js
+--- a/scene-auto-tagger/character-identity-source.js
++++ b/scene-auto-tagger/character-identity-source.js
+@@ -94 +94 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.26",
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27",
+diff --git a/scene-auto-tagger/descriptor-transactions-source.js b/scene-auto-tagger/descriptor-transactions-source.js
+--- a/scene-auto-tagger/descriptor-transactions-source.js
++++ b/scene-auto-tagger/descriptor-transactions-source.js
+@@ -110 +110 @@ function run(args, runtime) {
+-  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.26', observedAt:new Date().toISOString()};
++  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.27', observedAt:new Date().toISOString()};
+diff --git a/scene-auto-tagger/ui/scene-descriptor-review.js b/scene-auto-tagger/ui/scene-descriptor-review.js
+--- a/scene-auto-tagger/ui/scene-descriptor-review.js
++++ b/scene-auto-tagger/ui/scene-descriptor-review.js
+@@ -5 +5 @@
+-  var UI_VERSION = "0.9.26";
++  var UI_VERSION = "0.9.27";
+diff --git a/scene-auto-tagger/IDENTITY-POLICY.md b/scene-auto-tagger/IDENTITY-POLICY.md
+--- a/scene-auto-tagger/IDENTITY-POLICY.md
++++ b/scene-auto-tagger/IDENTITY-POLICY.md
+@@ -1 +1,35 @@
+-# Female identity assignment policy (0.9.25)
++# Female identity assignment policy (0.9.27)
++
++## Private reviewed identity layer
++
++An optional `identity-local-review.json` contains explicitly reviewed native Tag
++ID/name bindings. The builder embeds it locally; it is git-ignored and must never
++be included in public bundles, diffs or source hashes. Public integration packages
++rebuild with an empty private layer. Keep a protected backup before rebuilding or
++installing. A native ID or exact name mismatch fails closed rather than falling
++back to unrelated canonical aliases.
++
++Identity categories include female fictional characters and verified female adult
++performers, plus explicitly approved fictional mascots, avatars, female forms,
++shared mantles and collectives. A fictionalized mascot is not its brand/company or
++the real person who inspired it. No real performer qualifies without independent
++adult verification. Provenance distinguishes supplied research, user decisions and
++the public registry. Research is not claimed to have been independently rechecked.
++
++`matchNames` is separate from native binding names and presentation aliases.
++Mislabels must not become match terms. Short identifiers require explicit opt-in
++and whole-token boundaries. `associationMode: review-required` always blocks new
++automatic additions even when identity eligibility is positive. It is used for
++mixed tags, uncertain depiction, form restrictions and generic names. No stored
++review marker, Studio, Group, model response or file folder can bypass that hold.
++Existing associations remain untouched. This release has no new mutation endpoint.
++
++Canonical collisions are checked across separate local bindings, not just shared
++record-object identity. Collision read results retain recognized identity evidence;
++ineligible and ignored decisions are not overwritten by duplicate uncertainty.
++Private decisions do not alter the historical Character taxonomy API.
++
++Run the full public fixture suite in a staging copy without the private binding
++file, then run the local-policy fixtures and compare every native Tag against the
++installed read API. Old unit fixture IDs intentionally do not match a real private
++inventory. Never run a live tagging task as a test.
+diff --git a/scene-auto-tagger/CHANGELOG.md b/scene-auto-tagger/CHANGELOG.md
+--- a/scene-auto-tagger/CHANGELOG.md
++++ b/scene-auto-tagger/CHANGELOG.md
+@@ -470,0 +471,8 @@
++# 0.9.27
++
++- Add an optional private, exact-ID/name reviewed identity layer without changing native metadata.
++- Separate safe association terms and explicit review holds from identity eligibility.
++- Support approved fictional mascot/avatar, collective, shared-mantle and female-form categories.
++- Preserve ignore preferences, duplicate guards, adult-performer verification and additive-only writes.
++- Keep research/decisions private; public packages rebuild without local bindings.
++

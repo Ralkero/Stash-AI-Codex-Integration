@@ -1,0 +1,14 @@
+{
+  ".gitignore": "81815b3809f84ede4c8312f53c285de0fdf6074a240e77f540d405b878fb57ff",
+  "scene-auto-tagger.js": "5d3f08e1617d4bad262ee6922cc497e3007fc3eea1a993046c28e4b0152fbbd8",
+  "scene-auto-tagger.yml": "c08f625ededa6a41f4aa09c98bef8693539477ec68c765539b98d4bfce198638",
+  "build-ai-read.cjs": "cca5b77b4e775de72c2354e59ce444b807dc3b49369507076af588bddcc40233",
+  "identity-eligibility-source.js": "88f48b69f75d708fdbeab1daa23db269f3f6a6013cb9aa77fd46d9baa022f2b5",
+  "ai-read-source.js": "e2c8dfb49a5c8740086767b201d3ee1f006eb5fb9ee0407e958b19aea4e3cd5b",
+  "character-identity-source.js": "fe06bb6fb89894c5281b16310107b7dcb738162148345d2c04b02aca74b5d999",
+  "descriptor-transactions-source.js": "818b766d67a08e873810cbf3d0d14a415fb1e1fe3932d5ccc1cdf48199f11e96",
+  "ui/scene-descriptor-review.js": "3de24a85933ab84a97944d7c3015cd47c559ecfee4f233e4adfd328b441aff0d",
+  "IDENTITY-POLICY.md": "6ceb165e8cbfc99f8345d44ed9d90503baf8fb304b2cfceb329c2671b393ef54",
+  "CHANGELOG.md": "0ceba3a1697c1d75bf385d17d883030b49e800350fe4d591a1fdfc20f841139c",
+  "tests/local-identity-review.test.js": "7e82a387097737e8e6f8ca70e1401956fc11734991ab525ecb816e827b096b66"
+}

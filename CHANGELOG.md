@@ -138,3 +138,10 @@
   from release preservation checks. See `REPORT-0.6.0.md`.
 
 Earlier milestones are documented in the versioned REPORT files and Git history.
+
+# Auto-Tagger 0.9.27 compatibility
+
+- Accept the audited private reviewed-identity owner without changing Stash AI's
+  version, metadata permissions or approval scopes.
+- Publish the sanitized owner integration delta and policy regression fixtures.
+- Keep private identity decisions, native inventory and migration drafts local.
