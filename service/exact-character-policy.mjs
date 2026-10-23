@@ -57,9 +57,10 @@ export function validateSource(s) {
     "rows",
     "excluded",
     "historical",
+    "admission",
   ]);
   check(
-    s.schema === 1 &&
+    [1, 2].includes(s.schema) &&
       s.type === EXACT.type &&
       typeof s.owner === "string" &&
       s.owner.length > 0,
@@ -80,6 +81,25 @@ export function validateSource(s) {
     "EXACT_SOURCE_LIMIT",
   );
   const seen = new Set();
+  if (s.schema === 2) {
+    object(s.admission, [
+      "kind",
+      "policy",
+      "auditHashes",
+      "registryHash",
+      "ownerCodeHash",
+    ]);
+    check(
+      s.admission.kind === "reviewed-policy-audit-v1" &&
+        s.admission.policy?.id === "female-identities-only-v1" &&
+        s.admission.policy?.reference &&
+        /^[a-f0-9]{64}$/.test(s.admission.policy?.documentHash) &&
+        /^[a-f0-9]{64}$/.test(s.admission.registryHash) &&
+        /^[a-f0-9]{64}$/.test(s.admission.ownerCodeHash) &&
+        hash(s.admission.auditHashes) === s.sourceHash,
+      "EXACT_POLICY_ADMISSION_INVALID",
+    );
+  } else check(!s.admission, "EXACT_SOURCE_INVALID");
   let pairs = 0;
   for (const r of s.rows) {
     object(r, [
@@ -119,21 +139,23 @@ export function validateSource(s) {
     );
     for (const tag of remove)
       check(
-        r.evidence.some(
-          (e) =>
-            e.sourceId === tag &&
-            e.decisionId &&
-            e.status === "supported" &&
-            e.sceneId === r.sceneId &&
-            e.beforeFingerprint === r.beforeFingerprint &&
-            e.evidence?.some((v) => v.kind === "user-decision") &&
-            ((e.action === "remove" && e.removalEstablished === true) ||
-              (e.action === "replace" &&
-                e.identityEstablished === true &&
-                e.associationEstablished === true &&
-                before.includes(e.targetId) &&
-                after.includes(e.targetId))),
-        ),
+        s.schema === 2
+          ? r.evidence.some((e) => validPolicyEvidence(e, r, tag, s.admission))
+          : r.evidence.some(
+              (e) =>
+                e.sourceId === tag &&
+                e.decisionId &&
+                e.status === "supported" &&
+                e.sceneId === r.sceneId &&
+                e.beforeFingerprint === r.beforeFingerprint &&
+                e.evidence?.some((v) => v.kind === "user-decision") &&
+                ((e.action === "remove" && e.removalEstablished === true) ||
+                  (e.action === "replace" &&
+                    e.identityEstablished === true &&
+                    e.associationEstablished === true &&
+                    before.includes(e.targetId) &&
+                    after.includes(e.targetId))),
+            ),
         "EXACT_REMOVAL_EVIDENCE_REQUIRED",
       );
     check(
@@ -144,6 +166,41 @@ export function validateSource(s) {
   }
   check(pairs <= EXACT.maxPairs, "EXACT_SOURCE_LIMIT");
   return pairs;
+}
+export function policyReason(record) {
+  if (record?.policyApproval || record?.eligibilityHold) return null;
+  if (["non-identity", "franchise"].includes(record?.category))
+    return "ineligible-" + record.category;
+  if (record?.category === "character" && record?.gender === "male")
+    return "ineligible-male-character";
+  return null; // New policy categories require an explicitly reviewed extension.
+}
+function validPolicyEvidence(e, r, tag, a) {
+  return (
+    e.kind === "reviewed-policy-removal-v1" &&
+    e.action === "remove" &&
+    e.sourceId === tag &&
+    e.sceneId === r.sceneId &&
+    e.beforeFingerprint === r.beforeFingerprint &&
+    e.removalEstablished === true &&
+    e.status === "supported" &&
+    e.targetId === null &&
+    !e.decisionId &&
+    e.policyReference === a.policy.reference &&
+    e.registryHash === a.registryHash &&
+    e.registryRecord?.tagId === tag &&
+    e.definition?.id === tag &&
+    e.registryRecord?.nativeName === e.definition?.name &&
+    !e.definition.ignore_auto_tag &&
+    Boolean(policyReason(e.registryRecord)) &&
+    e.reasonCode === policyReason(e.registryRecord) &&
+    e.ownerClassification?.status === "ineligible" &&
+    e.ownerClassification.reason === e.reasonCode &&
+    e.registryRecord?.basis &&
+    e.registryRecord?.evidence &&
+    e.auditFindingHash?.match(/^[a-f0-9]{64}$/) &&
+    e.definitionHash === hash(e.definition)
+  );
 }
 export function validateManifest(m) {
   object(m, [

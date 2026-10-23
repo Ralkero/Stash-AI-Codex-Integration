@@ -46,7 +46,8 @@
       [reviewRequest, setReviewRequest] = R.useState(null),
       [ack, setAck] = R.useState(false),
       [search, setSearch] = R.useState(""),
-      [reason, setReason] = R.useState("");
+      [reason, setReason] = R.useState(""),
+      [resultFilter, setResultFilter] = R.useState("");
     const generation = R.useRef(0),
       selected = R.useRef(null),
       actionSequence = R.useRef(0),
@@ -157,6 +158,7 @@
         if (selected.current !== args.planId) {
           setSearch("");
           setReason("");
+          setResultFilter("");
         }
         selected.current = args.planId;
         setAck(false);
@@ -239,6 +241,7 @@
     const rows =
       m?.entries.filter(
         (e) =>
+          (!resultFilter || e.after.length === 0) &&
           (!reason || e.evidence.some((f) => f.reason === reason)) &&
           [e.sceneId, e.label, ...Object.values(e.names)]
             .join(" ")
@@ -472,6 +475,26 @@
                     m.entries.length +
                     " scenes shown. Approval always covers the entire frozen manifest, not the filter.",
                 ),
+                h(
+                  "label",
+                  null,
+                  "Expected result",
+                  h(
+                    "select",
+                    {
+                      className: "form-control",
+                      "aria-label": "Expected result",
+                      value: resultFilter,
+                      onChange: (e) => setResultFilter(e.target.value),
+                    },
+                    h("option", { value: "" }, "All scenes"),
+                    h(
+                      "option",
+                      { value: "empty" },
+                      "Scenes with no remaining Character Tags",
+                    ),
+                  ),
+                ),
                 rows.map((e) => {
                   const row = detail.rows.find(
                       (r) => r.operationId === e.operationId,
@@ -497,7 +520,16 @@
                     h("p", null, "Remove: " + show(e.remove)),
                     h("p", null, "After: " + show(e.after)),
                     e.evidence.map((v, i) =>
-                      h("p", { key: i }, v.reason + " — " + v.decisionId),
+                      h(
+                        "p",
+                        { key: i },
+                        v.reason +
+                          " — " +
+                          (v.kind === "reviewed-policy-removal-v1"
+                            ? "Reviewed eligibility policy; installed identity registry. " +
+                              v.registryRecord.basis
+                            : v.decisionId),
+                      ),
                     ),
                     e.excluded.length > 0 &&
                       h(

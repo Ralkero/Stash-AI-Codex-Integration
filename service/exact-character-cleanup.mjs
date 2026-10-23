@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { check, object } from "./validation.mjs";
 import { seal } from "./tag-cleanup-policy.mjs";
+import { readSources } from "./exact-character-sources.mjs";
 import {
   EXACT,
   hash,
@@ -166,10 +167,7 @@ export class ExactCharacterCleanup {
     return rows;
   }
   async source(owner) {
-    const s = this.unwrap(await this.store.read(sourceFile, null));
-    validateSource(s);
-    check(s.owner === owner, "EXACT_DENIED");
-    return s;
+    return (await readSources(this, owner)).source;
   }
   summary(p) {
     this.verify(p);
@@ -302,6 +300,10 @@ export class ExactCharacterCleanup {
           continue;
         }
         if (
+          (s.schema === 2 &&
+            r.evidence.some(
+              (e) => !same(e.definition, byId.get(e.sourceId)),
+            )) ||
           r.before.some(
             (t) =>
               !byId.has(t) ||

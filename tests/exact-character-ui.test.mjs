@@ -301,6 +301,32 @@ const deferred = () => {
   return { promise, resolve, reject };
 };
 const review = (f) => f.nodes().find((n) => n.props["data-exact-review"]);
+test("empty-result filter exposes all affected scenes without narrowing approval scope", async () => {
+  const f = await opened();
+  await f.inspect("fixture").props.onClick();
+  f.render();
+  f.nodes()
+    .find((n) => n.props["aria-label"] === "Expected result")
+    .props.onChange({ target: { value: "empty" } });
+  f.render();
+  assert(f.text().includes("1 of 2 scenes shown"));
+  assert(f.text().includes("Scene 20"));
+  assert(!f.text().includes("Scene 10 ·"));
+  assert(f.button("Approve removal").props.disabled);
+  assert(
+    f.text().includes("Approve removal of 3 Tag assignments from 2 scenes"),
+  );
+  assert.equal(f.calls.filter((c) => c.action === "approve").length, 0);
+  await f.inspect("historical").props.onClick();
+  f.render();
+  await f.inspect("fixture").props.onClick();
+  f.render();
+  assert.equal(
+    f.nodes().find((n) => n.props["aria-label"] === "Expected result").props
+      .value,
+    "",
+  );
+});
 
 test("inspection announces loading, then focuses and scrolls the committed accessible review", async () => {
   const f = await opened(),

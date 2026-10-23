@@ -9,6 +9,11 @@ import { ExactCharacterCleanup } from "../service/exact-character-cleanup.mjs";
 import { seal } from "../service/tag-cleanup-policy.mjs";
 import { reviewedSource } from "./lib/character-source.mjs";
 import { check } from "../service/validation.mjs";
+if (process.argv[2] === "--audit") {
+  const { auditImport } = await import("./lib/character-audit-import.mjs");
+  await auditImport(process.argv.slice(3));
+  process.exit(0);
+}
 const [
   stateDir,
   input,
