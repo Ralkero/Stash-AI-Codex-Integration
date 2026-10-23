@@ -43,21 +43,44 @@
       [detail, setDetail] = R.useState(null),
       [error, setError] = R.useState(""),
       [working, setWorking] = R.useState(false),
+      [reviewRequest, setReviewRequest] = R.useState(null),
       [ack, setAck] = R.useState(false),
       [search, setSearch] = R.useState(""),
       [reason, setReason] = R.useState("");
     const generation = R.useRef(0),
-      selected = R.useRef(null);
+      selected = R.useRef(null),
+      actionSequence = R.useRef(0),
+      reviewSection = R.useRef(null),
+      errorSection = R.useRef(null);
     const call = (action, args = {}) =>
       request("/character-cleanup", { action, args });
     R.useEffect(() => {
       generation.current++;
       setWorking(false);
+      setReviewRequest(null);
     }, [open, ready]);
+    // Explicit inspection only: refs exist after React commits the selected
+    // review. Progress refreshes must never steal focus or reset scrolling.
+    R.useEffect(() => {
+      if (!open || !reviewRequest) return;
+      const target =
+        reviewRequest.phase === "loaded" &&
+        detail?.plan.id === reviewRequest.id &&
+        detail?.manifest.id === reviewRequest.id
+          ? reviewSection.current
+          : reviewRequest.phase === "error"
+            ? errorSection.current
+            : null;
+      if (target) {
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ block: "start", behavior: "instant" });
+      }
+    }, [open, reviewRequest, detail?.plan.id]);
     R.useEffect(() => {
       let cancelled = false;
       if (!open || !ready) return;
-      const g = generation.current;
+      const g = generation.current,
+        sequence = actionSequence.current;
       const refresh = () =>
         call("list")
           .then(async (v) => {
@@ -66,13 +89,18 @@
               p && p.state !== "awaiting-approval"
                 ? await call("read", { planId: p.id })
                 : null;
-            if (!cancelled && g === generation.current) {
+            if (
+              !cancelled &&
+              g === generation.current &&
+              sequence === actionSequence.current
+            ) {
               if (d) setDetail(d);
               setData(v);
             }
           })
           .catch((e) => {
-            if (!cancelled) setError(explain(e.message));
+            if (!cancelled && sequence === actionSequence.current)
+              setError(explain(e.message));
           });
       refresh();
       return () => {
@@ -86,16 +114,24 @@
       if (!open || !ready || !running) return;
       let cancelled = false;
       const timer = setInterval(async () => {
+        const sequence = actionSequence.current,
+          selectedId = selected.current;
         try {
           const v = await call("list");
           if (cancelled) return;
-          if (selected.current) {
-            const d = await call("read", { planId: selected.current });
-            if (!cancelled) setDetail(d);
+          if (selectedId) {
+            const d = await call("read", { planId: selectedId });
+            if (
+              !cancelled &&
+              sequence === actionSequence.current &&
+              selected.current === selectedId
+            )
+              setDetail(d);
           }
-          if (!cancelled) setData(v);
+          if (!cancelled && sequence === actionSequence.current) setData(v);
         } catch (e) {
-          if (!cancelled) setError(explain(e.message));
+          if (!cancelled && sequence === actionSequence.current)
+            setError(explain(e.message));
         }
       }, 2000);
       return () => {
@@ -111,26 +147,56 @@
       [],
     );
     const act = async (action, args = {}) => {
-      const g = generation.current;
+      const g = generation.current,
+        sequence = ++actionSequence.current;
+      const current = () =>
+        g === generation.current && sequence === actionSequence.current;
       setWorking(true);
       setError("");
+      if (action === "read") {
+        if (selected.current !== args.planId) {
+          setSearch("");
+          setReason("");
+        }
+        selected.current = args.planId;
+        setAck(false);
+        setDetail(null);
+        setReviewRequest({ id: args.planId, sequence, phase: "loading" });
+      }
       try {
         const v = await call(action, args);
-        if (g !== generation.current) return;
+        if (!current()) return;
         if (action === "read") {
-          selected.current = v.plan.id;
+          if (v.plan?.id !== args.planId || v.manifest?.id !== args.planId)
+            throw Error("Review response did not match the selected plan.");
           setDetail(v);
           setAck(false);
+          setReviewRequest({ id: args.planId, sequence, phase: "loaded" });
         } else if (selected.current) {
-          setDetail(await call("read", { planId: selected.current }));
+          const d = await call("read", { planId: selected.current });
+          if (!current()) return;
+          setDetail(d);
           setAck(false);
         }
-        setData(await call("list"));
+        const list = await call("list");
+        if (current()) setData(list);
       } catch (e) {
-        if (g === generation.current)
-          setError(explain(e.message) + " No unconfirmed success is assumed.");
+        if (current()) {
+          setError(
+            action === "read"
+              ? "Could not open the complete review for plan " +
+                  args.planId +
+                  ": " +
+                  e.message
+              : explain(e.message) + " No unconfirmed success is assumed.",
+          );
+          if (action === "read") {
+            setDetail(null);
+            setReviewRequest({ id: args.planId, sequence, phase: "error" });
+          }
+        }
       } finally {
-        if (g === generation.current) setWorking(false);
+        if (current()) setWorking(false);
       }
     };
     const button = (text, fn, disabled = false) =>
@@ -211,7 +277,17 @@
               null,
               "One frozen plan, one explicit approval. Only the listed scene-to-Tag relationships can be removed. No replacements, Tag deletions or title edits.",
             ),
-            error && h("p", { role: "alert", className: "text-danger" }, error),
+            error &&
+              h(
+                "p",
+                {
+                  ref: errorSection,
+                  tabIndex: -1,
+                  role: "alert",
+                  className: "text-danger",
+                },
+                error,
+              ),
             !writesReady &&
               h(
                 "p",
@@ -273,6 +349,17 @@
                   () => act("read", { planId: p.id }),
                   locked,
                 ),
+                reviewRequest?.id === p.id &&
+                  reviewRequest.phase === "loading" &&
+                  h(
+                    "p",
+                    {
+                      role: "status",
+                      "aria-live": "polite",
+                      "aria-atomic": true,
+                    },
+                    "Loading complete review for plan " + p.id + "…",
+                  ),
                 ["approved", "executing"].includes(p.state) &&
                   button(
                     "Pause",
@@ -290,8 +377,31 @@
             m &&
               h(
                 "section",
-                { "data-exact-review": m.id },
-                h("h3", null, "Complete immutable review"),
+                {
+                  key: m.id,
+                  ref: reviewSection,
+                  id: "stash-ai-exact-review-" + m.id,
+                  "data-exact-review": m.id,
+                  tabIndex: -1,
+                  role: "region",
+                  "aria-labelledby": "stash-ai-exact-review-heading-" + m.id,
+                },
+                h(
+                  "h3",
+                  { id: "stash-ai-exact-review-heading-" + m.id },
+                  "Complete immutable review — " + plan.state,
+                ),
+                h(
+                  "p",
+                  null,
+                  "Selected plan: " +
+                    m.id +
+                    " · " +
+                    m.counts.relationships +
+                    " removals across " +
+                    m.counts.scenes +
+                    " scenes.",
+                ),
                 h(
                   "details",
                   null,

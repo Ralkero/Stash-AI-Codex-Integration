@@ -2,6 +2,11 @@
 
 ## 0.12.0 — 2026-10-22
 
+- Frontend inspection hotfix: complete-plan reviews now scroll into view and
+  receive keyboard focus after React renders the selected plan. Show a labeled
+  loading status and the actual read error; reject mismatched or stale responses
+  and reset acknowledgement on inspection. No manifest, challenge, approval,
+  runtime or version changes; existing frozen plans remain valid.
 - Separate exact-manifest Character Tag removal admission and UI review; no
   change to Franchise cleanup eligibility or native proposal limits.
 - One authenticated immutable-scope approval, five-scene verified batches,
