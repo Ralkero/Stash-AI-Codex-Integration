@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.12.0 — 2026-10-22
+
+- Separate exact-manifest Character Tag removal admission and UI review; no
+  change to Franchise cleanup eligibility or native proposal limits.
+- One authenticated immutable-scope approval, five-scene verified batches,
+  durable intent/audit records, pause/resume and conservative restart recovery.
+- Private operator staging only; no model approval/execution tool or arbitrary
+  mutation endpoint. Export includes separately approved recovery guidance.
+- Focused engine, real-auth fixture and UI race regression coverage.
+- Read-only plan inspection remains available when runtime/write checks block
+  execution. Approval and resume remain disabled until those checks pass.
+- With separate operator authorization, revalidated the already-installed Codex
+  0.163.0-alpha.11 and pinned its exact executable hashes. Controlled catalog,
+  restart/resume, authenticated streaming, cancellation and separate-home
+  persistence passed; no relaxed tool or approval restrictions.
+
 ## 0.11.1 — 2026-10-20
 
 - Chronology hotfix: unify messages, attached results, audits, cleanup plans,

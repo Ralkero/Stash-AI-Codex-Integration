@@ -6,7 +6,12 @@ chat-first interface for read-only library exploration, rich scene results,
 guided review, and narrowly bounded metadata proposals that require explicit
 approval in Stash before any write.
 
-Current tracked release: **0.11.2**.
+Current tracked release: **0.12.0**.
+
+[Exact-Manifest Character Tag Cleanup](docs/EXACT-CHARACTER-CLEANUP.md) adds a
+separate UI-only, single-approval removal workflow with immutable scope,
+bounded verified execution, durable journals and explicit pause/resume.
+Deployment and plan preparation do not approve or execute cleanup.
 
 Audited owner integration: [Scene Auto-Tagger 0.9.26 verified identity registry](docs/identity-registry-0.9.26.md). This expands source-backed identity records without changing existing scene tags or approval rules.
 

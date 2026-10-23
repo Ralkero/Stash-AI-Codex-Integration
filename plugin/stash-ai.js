@@ -9,7 +9,7 @@
   const KEY = "stash.aiCommandCenter.pairing.v1",
     LAST = "stash.aiCommandCenter.lastThread.v1";
   let lastStatus = {
-    version: "0.11.2",
+    version: "0.12.0",
     runtimeState: "not_connected",
     authenticated: false,
     stashReachable: false,
@@ -312,6 +312,10 @@
                 setSuggestions(null);
                 return;
               }
+              if (!c.signal.aborted && e.type === "exact-character-cleanup") {
+                setDecisionRevision((v) => v + 1);
+                return;
+              }
               if (c.signal.aborted || e.threadId !== activeThread.current)
                 return;
               if (e.type === "tag-cleanup") setDecisionRevision((v) => v + 1);
@@ -556,6 +560,15 @@
         "header",
         { className: "stash-ai-header" },
         h("h1", null, "Stash AI"),
+        window.StashAIExactCharacterCleanup &&
+          h(window.StashAIExactCharacterCleanup, {
+            request,
+            ready: Boolean(token),
+            writesReady:
+              status.runtimeState === "ready" && status.writesEnabled,
+            revision: decisionRevision,
+            busy,
+          }),
         h(
           "button",
           {
@@ -1193,7 +1206,7 @@
     },
   ]);
   window.StashAICommandCenter = {
-    version: "0.11.2",
+    version: "0.12.0",
     apiVersion: 1,
     route,
     status: () => ({
@@ -1217,7 +1230,7 @@
         id: "ai-command-center",
         apiVersion: 1,
         pluginId: "stash-ai-command-center",
-        version: "0.11.2",
+        version: "0.12.0",
         schemaVersion: 10,
         api: window.StashAICommandCenter,
       });

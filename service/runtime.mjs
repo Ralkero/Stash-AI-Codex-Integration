@@ -11,12 +11,12 @@ import {
 } from "./runtime-home.mjs";
 
 // Version-gated until a new installed protocol has passed the isolation tests.
-export const TESTED_RUNTIME = "0.163.0-alpha.10.2";
+export const TESTED_RUNTIME = "0.163.0-alpha.11";
 const LOCK = {
   "codex.exe":
-    "f6dbf48cb70f62649c645f26c87dc9bf84cc36986202dfad8e12fb5b8ca70312",
+    "00c0f1e4099246fddcd67ec620ca8ed50827c7d70e113b7224f7a2933cf2d67c",
   "codex-code-mode-host.exe":
-    "3b6a9179a4da17fa5fc6948219cd61486dc3b534c683838076d8c61bd311c68e",
+    "08f5c6131da89af9b3def059399caa9cd8dd9e54d6f9ee5f824223369cc40eb3",
 };
 async function verifyRuntime(exe) {
   const resolved = path.isAbsolute(exe)
@@ -141,7 +141,7 @@ export class Runtime extends EventEmitter {
       }
     });
     const init = await this.call("initialize", {
-      clientInfo: { name: "stash_ai_command_center", version: "0.11.2" },
+      clientInfo: { name: "stash_ai_command_center", version: "0.12.0" },
       capabilities: { experimentalApi: true },
     });
     this.send({ method: "initialized" });

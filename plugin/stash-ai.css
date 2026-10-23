@@ -603,3 +603,44 @@
   font-size: 0.85rem;
   color: inherit;
 }
+.stash-ai-page .stash-ai-exact-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.65);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.stash-ai-page .stash-ai-exact-panel {
+  width: min(1100px, 96vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--bs-body-bg, #30404b);
+  color: var(--bs-body-color, #eee);
+  border: 1px solid #71808b;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+.stash-ai-page .stash-ai-exact-panel header {
+  display: flex;
+  justify-content: space-between;
+}
+.stash-ai-page .stash-ai-exact-panel button {
+  margin: 0.3rem;
+}
+.stash-ai-page .stash-ai-exact-panel details {
+  padding: 0.5rem;
+  border-bottom: 1px solid #65737e;
+}
+.stash-ai-page .stash-ai-exact-panel pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 20rem;
+  overflow: auto;
+}
+.stash-ai-page .stash-ai-exact-approval {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #99aab8;
+}

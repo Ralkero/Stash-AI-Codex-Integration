@@ -53,6 +53,7 @@ export function attachWebSocket(server, handle, auth) {
             "/review-decisions",
             "/tag-cleanup",
             "/global-tag-cleanup",
+            "/character-cleanup",
             "/review-decision-request",
             "/review-decision-confirm",
             "/conversations",

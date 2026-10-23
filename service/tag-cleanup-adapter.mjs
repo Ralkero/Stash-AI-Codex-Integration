@@ -22,7 +22,7 @@ export const AUDITED_PLUGINS = Object.freeze({
   "scene-subtitle-importer": "0.2.0",
   "scene-title-overlay": "1.6.2",
   "scenes-default-sort": "1.0.0",
-  "stash-ai-command-center": "0.11.2",
+  "stash-ai-command-center": "0.12.0",
   "stash-custom-core": "0.1.0",
   "stash-granular-volume": "1.0.1",
   "stash-image-slideshow": "0.6.0",
@@ -74,7 +74,7 @@ export class TagCleanupAdapter {
       "CLEANUP_PLUGIN_DEPENDENCY_UNTESTED",
     );
     return {
-      serviceVersion: "0.11.2",
+      serviceVersion: "0.12.0",
       toolContract: 10,
       runtimeVersion: TESTED_RUNTIME,
       native: r.version,

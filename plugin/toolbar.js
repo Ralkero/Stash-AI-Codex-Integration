@@ -52,5 +52,5 @@
   api.patch.before("MainNavBar.UtilityItems", (props) => [
     { ...props, children: insert(props.children) },
   ]);
-  window.StashAIToolbar = Object.freeze({ version: "0.11.2" });
+  window.StashAIToolbar = Object.freeze({ version: "0.12.0" });
 })();

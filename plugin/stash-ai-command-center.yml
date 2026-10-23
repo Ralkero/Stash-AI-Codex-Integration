@@ -1,6 +1,6 @@
 name: Stash AI Command Center
 description: Local Codex conversations and preview-first, bounded Stash operations.
-version: 0.11.2
+version: 0.12.0
 ui:
   assets:
     /: assets
@@ -13,6 +13,7 @@ ui:
     - scene-results.js
     - global-tag-cleanup.js
     - tag-cleanup.js
+    - exact-character-cleanup.js
     - stash-ai.js
   css:
     - stash-ai.css

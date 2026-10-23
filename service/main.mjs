@@ -21,6 +21,8 @@ import { TagCleanup } from "./tag-cleanup.mjs";
 import { TagCleanupAdapter } from "./tag-cleanup-adapter.mjs";
 import { GlobalTagCleanup } from "./global-tag-cleanup.mjs";
 import { GlobalTagAdapter } from "./global-tag-adapter.mjs";
+import { ExactCharacterCleanup } from "./exact-character-cleanup.mjs";
+import { ExactCharacterAdapter } from "./exact-character-adapter.mjs";
 import { recommendations } from "./recommendation-policy.mjs";
 import {
   reviewFeedback,
@@ -32,7 +34,7 @@ import { searchCapabilities } from "./search-capabilities.mjs";
 import { object, string, check } from "./validation.mjs";
 import { attachWebSocket } from "./websocket.mjs";
 import { acquireInstance } from "./instance.mjs";
-export const VERSION = "0.11.2";
+export const VERSION = "0.12.0";
 export async function createService({
   stateDir = path.join(
     process.env.LOCALAPPDATA || os.homedir(),
@@ -40,6 +42,7 @@ export async function createService({
   ),
   runtimeFactory = (options) => new RuntimeRouter(options),
   globalAdapterFactory = (options) => new GlobalTagAdapter(options),
+  exactAdapterFactory = (stash) => new ExactCharacterAdapter(stash),
 } = {}) {
   const store = new Store(stateDir);
   await store.init();
@@ -294,7 +297,7 @@ export async function createService({
         : result;
     },
   });
-  let globalTagCleanup;
+  let globalTagCleanup, exactCharacterCleanup;
   const tagCleanup = new TagCleanup({
     store,
     adapter: new TagCleanupAdapter(stash),
@@ -302,6 +305,7 @@ export async function createService({
     canWrite: () =>
       proposals.writesEnabled &&
       !globalTagCleanup?.blocksWrites() &&
+      !exactCharacterCleanup?.blocksWrites() &&
       !proposals.rows.some((p) => ["applying", "uncertain"].includes(p.status)),
   });
   await tagCleanup.init();
@@ -314,9 +318,24 @@ export async function createService({
       active.size === 0 &&
       tagCleanup.available &&
       !tagCleanup.blocksWrites() &&
+      !exactCharacterCleanup?.blocksWrites() &&
       !proposals.rows.some((p) => ["applying", "uncertain"].includes(p.status)),
   });
   await globalTagCleanup.init();
+  exactCharacterCleanup = new ExactCharacterCleanup({
+    store,
+    adapter: exactAdapterFactory(stash),
+    emit,
+    canWrite: () =>
+      proposals.writesEnabled &&
+      active.size === 0 &&
+      tagCleanup.available &&
+      globalTagCleanup.available &&
+      !tagCleanup.blocksWrites() &&
+      !globalTagCleanup.blocksWrites() &&
+      !proposals.rows.some((p) => ["applying", "uncertain"].includes(p.status)),
+  });
+  await exactCharacterCleanup.init();
   runtime.on("unavailable", (code) => {
     runtimeState = "offline";
     lastError = code;
@@ -436,6 +455,10 @@ export async function createService({
         ? "available"
         : "unavailable",
       globalTagCleanupSchema: 1,
+      exactCharacterCleanup: exactCharacterCleanup.available
+        ? "available"
+        : "unavailable",
+      exactCharacterCleanupSchema: 1,
       relationshipOperations: [
         "tags:add/remove/replace",
         "studio:assign/replace/clear",
@@ -584,6 +607,35 @@ export async function createService({
               for (const res of subscribers.get(owner) || []) res.end();
             });
             break;
+          case "/character-cleanup": {
+            // UI-only authenticated account workflow; deliberately absent from TOOLS.
+            object(input, ["action", "args"]);
+            const args = input.args || {};
+            if (input.action === "list") {
+              object(args, []);
+              result = await exactCharacterCleanup.list(owner);
+            } else if (input.action === "read")
+              result = exactCharacterCleanup.read(owner, args);
+            else if (input.action === "control" && args.action === "pause")
+              result = await exactCharacterCleanup.control(owner, args);
+            else {
+              check(active.size === 0 && !cleanupApprovalPending, "BUSY");
+              cleanupApprovalPending = true;
+              try {
+                await proposals.queue;
+                if (input.action === "prepare")
+                  result = await exactCharacterCleanup.prepare(owner, args);
+                else if (input.action === "approve")
+                  result = await exactCharacterCleanup.approve(owner, args);
+                else if (input.action === "control")
+                  result = await exactCharacterCleanup.control(owner, args);
+                else throw Error("OPERATION_DENIED");
+              } finally {
+                cleanupApprovalPending = false;
+              }
+            }
+            break;
+          }
           case "/global-tag-cleanup": {
             object(input, ["threadId", "action", "args"]);
             owned(owner, input.threadId);
@@ -884,6 +936,7 @@ export async function createService({
                 !cleanupApprovalPending &&
                   tagCleanup.available &&
                   !globalTagCleanup.blocksWrites() &&
+                  !exactCharacterCleanup.blocksWrites() &&
                   !tagCleanup.blocksWrites(),
                 "CLEANUP_OPERATION_OUTSTANDING",
               );
@@ -953,6 +1006,7 @@ export async function createService({
       await reviewDecisions.queue;
       await tagCleanup.close();
       await globalTagCleanup.close();
+      await exactCharacterCleanup.close();
       runtime.close();
       await new Promise((r) => server.close(r));
     })());
