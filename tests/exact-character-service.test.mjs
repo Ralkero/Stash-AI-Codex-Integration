@@ -247,9 +247,14 @@ test("real HTTP and browser WebSocket require authenticated review, reject repla
     assert.equal((await browserRequest(body, h)).state, "approved");
     assert.equal((await request(body, h)).error, "REPLAY_DENIED");
     assert.equal((await request(body)).error, "EXACT_APPROVAL_REPLAY");
-    for (let i = 0; i < 50 && !writes.length; i++)
+    // Dispatch is not completion: wait for durable readback/journal verification.
+    let state;
+    const deadline = Date.now() + 5000;
+    do {
+      state = await request({ action: "list" });
+      if (state.plans[0].state === "completed") break;
       await new Promise((r) => setTimeout(r, 20));
-    const state = await request({ action: "list" });
+    } while (Date.now() < deadline);
     assert.equal(state.plans[0].state, "completed");
     assert.deepEqual(writes, ["10"]);
     assert.deepEqual(
