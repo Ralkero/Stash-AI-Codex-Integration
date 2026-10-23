@@ -1,0 +1,11 @@
+{
+  "scene-auto-tagger.js": "149a0f6a005fafbf3a4bcb15331c6ce417a29b3e2c4ca010e6b15c3678d5372d",
+  "scene-auto-tagger.yml": "5b1c446a735eb817d0dab2231e9258fefbfc7fe03b11dc728bcaea050b292de9",
+  "ai-read-source.js": "f8357aed8d91387472f867baaf1f7dfdd2c42e3b4c1ede8a98dc82722b9663df",
+  "character-identity-source.js": "b6782ea9f569699bfb4ca96f80180cd252ba2e89d3b144bc7169ee2236ca3a0b",
+  "descriptor-transactions-source.js": "18bc705c47a704974df56365f714b1d586e6abd8118d3a1bb501296e340690c5",
+  "ui/scene-descriptor-review.js": "926d5bc53aa594545462190373b59a753bed7746251373adb3d0458350137b69",
+  "IDENTITY-POLICY.md": "57b4d01e8214e70aa176b5e670c960fd9bcd33f33ce687f66d1195f04a501b9f",
+  "tests/native-definition-guard.test.js": "6a70d076da1c7ab9f3ba5635dbc6a0be90b8ebe5bfadc3dc588d7e2c0aa9d60c",
+  "tests/identity-paths.test.js": "3cbc0881b94beeb83f55c031d3677657ef3cd60f4e9868eb14ac5d528598f4a7"
+}

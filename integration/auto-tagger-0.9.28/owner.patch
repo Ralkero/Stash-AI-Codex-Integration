@@ -1,0 +1,104 @@
+diff --git a/scene-auto-tagger/scene-auto-tagger.js b/scene-auto-tagger/scene-auto-tagger.js
+--- a/scene-auto-tagger/scene-auto-tagger.js
++++ b/scene-auto-tagger/scene-auto-tagger.js
+@@ -59 +59 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27", readOnly: true,
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.28", readOnly: true,
+@@ -296 +296 @@ function run(args, runtime) {
+-  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.27', observedAt:new Date().toISOString()};
++  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.28', observedAt:new Date().toISOString()};
+@@ -418 +418 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27",
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.28",
+@@ -621 +621 @@ return { records, localRecords:typeof localReview === 'undefined' ? [] : localRe
+-const PLUGIN_VERSION = "0.9.27";
++const PLUGIN_VERSION = "0.9.28";
+@@ -2034,0 +2035,2 @@ function doGraphQL(query, variables, runtime, operationName) {
++  if (/\btagCreate\s*\(/.test(query))
++    throw Error("IDENTITY_POLICY_AUTOMATIC_TAG_CREATION_NOT_PERMITTED");
+@@ -2103 +2105 @@ function readIdentityEligibility(args, runtime) {
+-  const result = {apiVersion:1,policyVersion:1,owner:'scene-auto-tagger',ownerVersion:'0.9.27',readOnly:true};
++  const result = {apiVersion:1,policyVersion:1,owner:'scene-auto-tagger',ownerVersion:'0.9.28',readOnly:true};
+@@ -3743,12 +3745,4 @@ function createTag(name, parentIds, runtime) {
+-  const res = doGraphQL(CREATE_TAG, { input: { name, parent_ids: parentIds || [] } }, runtime, "CreateTag");
+-  const created = (res && res.tagCreate) || null;
+-  if (created) {
+-    created.__sceneAutoTaggerCreated = true;
+-    pluginLog(
+-      "OBJECT_CREATED type=tag id=" + logSafeValue(created.id) +
+-      " name=" + logSafeValue(created.name || name) +
+-      " parentIds=" + logSafeValue((parentIds || []).join(",")),
+-      runtime
+-    );
+-  }
+-  return created;
++  // Names inferred from media folders are not reviewed identity definitions.
++  // Scene matching already requires an existing, independently eligible Tag.
++  // Keep this last-resort helper fail-closed for legacy/future callers too.
++  throw Error("IDENTITY_POLICY_AUTOMATIC_TAG_CREATION_NOT_PERMITTED");
+@@ -4167 +4161 @@ function runImageFolderTagTask(args, runtime) {
+-  const summary = { scanned: 0, eligible: 0, updated: 0, alreadyTagged: 0, skipped: 0, errors: 0, wouldUpdate: 0 };
++  const summary = { scanned: 0, eligible: 0, updated: 0, alreadyTagged: 0, skipped: 0, errors: 0, wouldUpdate: 0, blockedCreation: 0 };
+@@ -4204 +4198,3 @@ function runImageFolderTagTask(args, runtime) {
+-        const tag = findOrCreateTagByName(franchise, !config.dryRun && config.imageTaggingCreateMissingTags, runtime);
++        // Existing image associations retain their legacy semantics. Creating a
++        // native definition from a Franchise folder is no longer permitted.
++        const tag = findOrCreateTagByName(franchise, false, runtime);
+@@ -4206,2 +4202 @@ function runImageFolderTagTask(args, runtime) {
+-          if (config.dryRun && config.imageTaggingCreateMissingTags) summary.wouldUpdate++;
+-          else summary.errors++;
++          summary.blockedCreation++;
+@@ -4213 +4208 @@ function runImageFolderTagTask(args, runtime) {
+-            " reason=tag_not_found",
++            " reason=automatic_tag_creation_not_permitted",
+@@ -4243,0 +4239 @@ function runImageFolderTagTask(args, runtime) {
++    " blockedCreation=" + summary.blockedCreation +
+diff --git a/scene-auto-tagger/scene-auto-tagger.yml b/scene-auto-tagger/scene-auto-tagger.yml
+--- a/scene-auto-tagger/scene-auto-tagger.yml
++++ b/scene-auto-tagger/scene-auto-tagger.yml
+@@ -3 +3 @@ description: Safety-first embedded JS auto-tagger with explicit, reversible huma
+-version: 0.9.27
++version: 0.9.28
+diff --git a/scene-auto-tagger/ai-read-source.js b/scene-auto-tagger/ai-read-source.js
+--- a/scene-auto-tagger/ai-read-source.js
++++ b/scene-auto-tagger/ai-read-source.js
+@@ -23 +23 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27", readOnly: true,
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.28", readOnly: true,
+diff --git a/scene-auto-tagger/character-identity-source.js b/scene-auto-tagger/character-identity-source.js
+--- a/scene-auto-tagger/character-identity-source.js
++++ b/scene-auto-tagger/character-identity-source.js
+@@ -94 +94 @@ function run(args, runtime) {
+-  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.27",
++  var result = { apiVersion: 1, owner: "scene-auto-tagger", ownerVersion: "0.9.28",
+diff --git a/scene-auto-tagger/descriptor-transactions-source.js b/scene-auto-tagger/descriptor-transactions-source.js
+--- a/scene-auto-tagger/descriptor-transactions-source.js
++++ b/scene-auto-tagger/descriptor-transactions-source.js
+@@ -110 +110 @@ function run(args, runtime) {
+-  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.27', observedAt:new Date().toISOString()};
++  var result = {apiVersion:1, owner:'scene-auto-tagger', ownerVersion:'0.9.28', observedAt:new Date().toISOString()};
+diff --git a/scene-auto-tagger/ui/scene-descriptor-review.js b/scene-auto-tagger/ui/scene-descriptor-review.js
+--- a/scene-auto-tagger/ui/scene-descriptor-review.js
++++ b/scene-auto-tagger/ui/scene-descriptor-review.js
+@@ -5 +5 @@
+-  var UI_VERSION = "0.9.27";
++  var UI_VERSION = "0.9.28";
+diff --git a/scene-auto-tagger/IDENTITY-POLICY.md b/scene-auto-tagger/IDENTITY-POLICY.md
+--- a/scene-auto-tagger/IDENTITY-POLICY.md
++++ b/scene-auto-tagger/IDENTITY-POLICY.md
+@@ -79,2 +79,13 @@ Needs Review marker. Review remains visible in task results. Independent native
+-Stash editing, image folder tagging and descriptor custom-field transactions keep
+-their existing ownership and semantics.
++Stash editing and descriptor custom-field transactions keep their ownership and
++semantics. Since 0.9.28 the legacy image-folder task can use an existing Tag but
++cannot create native definitions from Franchise folder names. Missing definitions
++are counted as `blockedCreation` in both preview and apply; no misleading
++`wouldUpdate` is reported. The legacy create helper and final GraphQL transport
++both reject automatic `tagCreate`. This does not edit existing image assignments,
++native aliases, registry bindings or the saved creation preference. Definitions
++must be reviewed and created through separately authorized native workflows.
++
++This owner is not a global Stash write interceptor. Native Stash auto-tagging,
++manual editing and other plugins do not pass through its guard. Unsafe native
++aliases remain a separate review concern; removal of an existing scene Tag alone
++does not establish permanent library-wide recurrence prevention.

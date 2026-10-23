@@ -828,7 +828,7 @@ test("conflict reports exact scene and accurate remaining relationships", async 
   assert.equal(s.counts.pending, 1);
   assert.equal(s.verifiedRelationships, 1);
 });
-for (const version of ["0.9.25", "0.9.26", "0.9.27"])
+for (const version of ["0.9.25", "0.9.26", "0.9.27", "0.9.28"])
   test(
     "audited registry owner accepted without changing cleanup permissions " +
       version,
@@ -876,7 +876,7 @@ for (const label of [
     await adapter.environment();
     if (label === "native") r.version.hash = "unknown";
     if (label === "owner")
-      r.plugins.find((p) => p.id === "scene-auto-tagger").version = "0.9.28";
+      r.plugins.find((p) => p.id === "scene-auto-tagger").version = "0.9.29";
     if (label === "new-plugin")
       r.plugins.push({ id: "writer", version: "1", enabled: true });
     if (label === "disabled-owner")
